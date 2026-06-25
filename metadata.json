@@ -1,0 +1,6 @@
+{
+  "name": "RB Bank MFS",
+  "description": "A high-fidelity, automated Mobile Financial Service (MFS) application featuring bilingual support, Drive Offer packages, and Utility Pay Bill services in a stunning mobile-first interface.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
