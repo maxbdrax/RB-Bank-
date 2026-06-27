@@ -61,7 +61,7 @@ interface WalletType {
 
 interface TransactionType {
   id: number;
-  type: "Send Money" | "Cash Out" | "Cash In" | "Mobile Recharge" | "Merchant Payment" | "Drive Offer" | "Pay Bill";
+  type: "Send Money" | "Cash Out" | "Cash In" | "Mobile Recharge" | "Merchant Payment" | "Drive Offer" | "Pay Bill" | "Add Money";
   sender_phone: string;
   receiver_phone: string;
   amount: number;
@@ -252,6 +252,876 @@ const translations = {
   }
 };
 
+// GLOBAL CLIENT-SIDE DATABASE SIMULATOR FOR NETLIFY AND STATIC DEPLOYMENTS
+const originalFetch = window.fetch;
+
+const getLocalDb = () => {
+  const data = localStorage.getItem("ROYAL_BANK_LOCAL_DB");
+  const createSeed = () => {
+    const seed = {
+      users: [
+        { id: 1, name: "Admin Manager", phone: "01700000001", role: "Customer" as const, pin_hash: "sha256$simulated$1234", status: "Active", created_at: new Date().toISOString() },
+        { id: 2, name: "Arif Rahman", phone: "01811223344", role: "Customer" as const, pin_hash: "sha256$simulated$2580", status: "Active", created_at: new Date().toISOString() },
+        { id: 3, name: "Rahat Agency", phone: "01999887766", role: "Agent" as const, pin_hash: "sha256$simulated$1122", status: "Active", created_at: new Date().toISOString() },
+        { id: 4, name: "Sultans Dine", phone: "01612345678", role: "Merchant" as const, pin_hash: "sha256$simulated$9900", status: "Active", created_at: new Date().toISOString() },
+        { id: 5, name: "Tahmid Hasan", phone: "01555443322", role: "Customer" as const, pin_hash: "sha256$simulated$5555", status: "Active", created_at: new Date().toISOString() },
+        { id: 6, name: "Anika Bushra", phone: "01333445566", role: "Customer" as const, pin_hash: "sha256$simulated$4321", status: "Active", created_at: new Date().toISOString() },
+      ],
+      wallets: [
+        { id: 1, user_id: 1, balance: 500000, pending_balance: 0, currency: "BDT" },
+        { id: 2, user_id: 2, balance: 1550, pending_balance: 0, currency: "BDT" },
+        { id: 3, user_id: 3, balance: 85000, pending_balance: 0, currency: "BDT" },
+        { id: 4, user_id: 4, balance: 12400, pending_balance: 0, currency: "BDT" },
+        { id: 5, user_id: 5, balance: 450, pending_balance: 0, currency: "BDT" },
+        { id: 6, user_id: 6, balance: 2800, pending_balance: 0, currency: "BDT" },
+      ],
+      transactions: [
+        { id: 1, type: "Cash In" as const, sender_phone: "01999887766", receiver_phone: "01811223344", amount: 2000, fee: 0, txn_id: "RBB847291B", status: "Success" as const, timestamp: new Date(Date.now() - 3600000 * 4).toISOString() },
+        { id: 2, type: "Send Money" as const, sender_phone: "01811223344", receiver_phone: "01555443322", amount: 450, fee: 5, txn_id: "RBB385920C", status: "Success" as const, timestamp: new Date(Date.now() - 3600000 * 3).toISOString() },
+        { id: 3, type: "Mobile Recharge" as const, sender_phone: "01811223344", receiver_phone: "01811223344", amount: 50, fee: 0, txn_id: "RBB927401D", status: "Success" as const, timestamp: new Date(Date.now() - 3600000 * 2).toISOString() },
+        { id: 4, type: "Cash Out" as const, sender_phone: "01333445566", receiver_phone: "01999887766", amount: 1000, fee: 15, txn_id: "RBB103859E", status: "Success" as const, timestamp: new Date(Date.now() - 3600000 * 1).toISOString() },
+      ],
+      drive_offers: [
+        { id: 1, operator: "Grameenphone", name: "GP 50 GB + 1600 Mins (30 Days)", regular: 998, price: 620, save: 378 },
+        { id: 2, operator: "Grameenphone", name: "GP 35 GB + 800 Mins (30 Days)", regular: 799, price: 490, save: 309 },
+        { id: 3, operator: "Robi", name: "Robi 45 GB + 1000 Mins (30 Days)", regular: 798, price: 450, save: 348 },
+        { id: 4, operator: "Robi", name: "Robi 60 GB Internet Only (30 Days)", regular: 649, price: 395, save: 254 },
+        { id: 5, operator: "Banglalink", name: "BL 40 GB + 900 Mins (30 Days)", regular: 699, price: 399, save: 300 },
+        { id: 6, operator: "Banglalink", name: "BL 20 GB + 500 Mins (30 Days)", regular: 499, price: 290, save: 209 },
+        { id: 7, operator: "Airtel", name: "Airtel 50 GB + 1000 Mins (30 Days)", regular: 748, price: 440, save: 308 },
+        { id: 8, operator: "Teletalk", name: "Teletalk 35 GB + 500 Mins (30 Days)", regular: 549, price: 320, save: 229 }
+      ],
+      notices: [
+        { id: 1, title: "ঈদ মোবারক - ঈদ অফার!", content: "প্রিয় গ্রাহকবৃন্দ, আমাদের সকল ড্রাইভ প্যাকের উপর থাকছে আকর্ষণীয় ক্যাশব্যাক! বিস্তারিত জানতে ড্রাইভ অফার সেকশন দেখুন।", timestamp: new Date(Date.now() - 3600000 * 2).toISOString() },
+        { id: 2, title: "সিস্টেম রক্ষণাবেক্ষণ নোটিশ", content: "আগামী শুক্রবার রাত ১২:০০ টা থেকে ভোর ৪:০০ টা পর্যন্ত আমাদের সার্ভার আপগ্রেড কাজ চলবে। সাময়িক এই অসুবিধার জন্য আমরা আন্তরিকভাবে দুঃখিত।", timestamp: new Date(Date.now() - 3600000 * 24).toISOString() }
+      ],
+      settlement_config: {
+        bank_name: "Sonali Bank PLC",
+        account_no: "1204-55633-221",
+        routing_no: "020260124"
+      },
+      add_money_methods: {
+        bkash: "01789456123",
+        nagad: "01987654321",
+        rocket: "01512345678"
+      },
+      admin_users: [
+        { username: "admin", password_hash: "password123" }
+      ],
+      logs: [
+        { timestamp: new Date().toISOString(), type: "SYSTEM" as const, message: "Client-side Local Database active (Netlify Fallback)" }
+      ]
+    };
+    localStorage.setItem("ROYAL_BANK_LOCAL_DB", JSON.stringify(seed));
+    return seed;
+  };
+
+  if (!data) {
+    return createSeed();
+  }
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    return createSeed();
+  }
+};
+
+const saveLocalDb = (db: any) => {
+  localStorage.setItem("ROYAL_BANK_LOCAL_DB", JSON.stringify(db));
+};
+
+let useOfflineFallback = false;
+
+const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  const urlStr = typeof input === "string" ? input : (input as URL).toString();
+  
+  if (!urlStr.includes("/api/v1/")) {
+    return originalFetch(input, init);
+  }
+
+  if (!useOfflineFallback) {
+    try {
+      const response = await originalFetch(input, init);
+      const contentType = response.headers.get("content-type");
+      if (response.status === 404 || (contentType && contentType.includes("text/html"))) {
+        useOfflineFallback = true;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      useOfflineFallback = true;
+    }
+  }
+
+  const db = getLocalDb();
+  const method = (init?.method || "GET").toUpperCase();
+  const body = init?.body ? JSON.parse(init.body as string) : {};
+
+  const simulateResponse = (status: number, data: any) => {
+    return new Response(JSON.stringify(data), {
+      status,
+      statusText: status === 200 || status === 201 ? "OK" : "Error",
+      headers: new Headers({ "Content-Type": "application/json" })
+    });
+  };
+
+  const logLocal = (type: "SQL" | "SYSTEM" | "API", message: string) => {
+    const timestamp = new Date().toISOString();
+    db.logs.push({ timestamp, type, message });
+    if (db.logs.length > 150) db.logs.shift();
+    saveLocalDb(db);
+  };
+
+  const generateTxId = () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let txn = "RBB";
+    for (let i = 0; i < 7; i++) {
+      txn += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return txn;
+  };
+
+  try {
+    if (urlStr.includes("/api/v1/db-state")) {
+      return simulateResponse(200, {
+        users: db.users,
+        wallets: db.wallets,
+        transactions: db.transactions,
+        drive_offers: db.drive_offers,
+        notices: db.notices,
+        settlement_config: db.settlement_config,
+        add_money_methods: db.add_money_methods,
+        admin_users: db.admin_users
+      });
+    }
+
+    if (urlStr.includes("/api/v1/logs")) {
+      return simulateResponse(200, db.logs);
+    }
+
+    if (urlStr.includes("/api/v1/register")) {
+      const { name, phone, role, pin } = body;
+      logLocal("API", `LOCAL POST /api/v1/register - Phone: ${phone}, Role: ${role}`);
+      
+      if (!name || !phone || !role || !pin) {
+        return simulateResponse(400, { error: "All fields are required" });
+      }
+
+      const existing = db.users.find((u: any) => u.phone === phone);
+      if (existing) {
+        logLocal("SYSTEM", `Local Registration failed: Phone ${phone} already exists.`);
+        return simulateResponse(409, { error: "Phone number already registered" });
+      }
+
+      const newUserId = db.users.length > 0 ? Math.max(...db.users.map((u: any) => u.id)) + 1 : 1;
+      const newUser = {
+        id: newUserId,
+        name,
+        phone,
+        role,
+        pin_hash: `sha256$simulated$${pin}`,
+        status: "Active",
+        created_at: new Date().toISOString()
+      };
+      db.users.push(newUser);
+
+      const newWallet = {
+        id: newUserId,
+        user_id: newUserId,
+        balance: role === "Agent" ? 100000 : 500,
+        pending_balance: 0,
+        currency: "BDT"
+      };
+      db.wallets.push(newWallet);
+
+      logLocal("SQL", `INSERT INTO users (id, name, phone, role, pin_hash) VALUES (${newUser.id}, '${newUser.name}', '${newUser.phone}', '${newUser.role}', '${newUser.pin_hash}');`);
+      logLocal("SQL", `INSERT INTO wallets (user_id, balance) VALUES (${newWallet.user_id}, ${newWallet.balance});`);
+      saveLocalDb(db);
+
+      return simulateResponse(201, {
+        message: "Registration successful",
+        user: { id: newUser.id, name: newUser.name, phone: newUser.phone, role: newUser.role }
+      });
+    }
+
+    if (urlStr.includes("/api/v1/agent/register-user")) {
+      const { agentPhone, agentPin, customerName, customerPhone, customerRole, customerPin } = body;
+      logLocal("API", `LOCAL POST /api/v1/agent/register-user - Agent: ${agentPhone}, Target: ${customerPhone}`);
+
+      const agent = db.users.find((u: any) => u.phone === agentPhone);
+      if (!agent || agent.role !== "Agent" || agent.status !== "Active") {
+        return simulateResponse(403, { error: "Invalid or inactive Agent account." });
+      }
+
+      if (agent.pin_hash !== `sha256$simulated$${agentPin}`) {
+        return simulateResponse(401, { error: "Incorrect Agent PIN" });
+      }
+
+      const existing = db.users.find((u: any) => u.phone === customerPhone);
+      if (existing) {
+        return simulateResponse(409, { error: "Phone number already registered" });
+      }
+
+      const newUserId = db.users.length > 0 ? Math.max(...db.users.map((u: any) => u.id)) + 1 : 1;
+      const newUser = {
+        id: newUserId,
+        name: customerName,
+        phone: customerPhone,
+        role: customerRole,
+        pin_hash: `sha256$simulated$${customerPin}`,
+        status: "Active",
+        created_at: new Date().toISOString()
+      };
+      db.users.push(newUser);
+
+      const newWallet = {
+        id: newUserId,
+        user_id: newUserId,
+        balance: 500,
+        pending_balance: 0,
+        currency: "BDT"
+      };
+      db.wallets.push(newWallet);
+
+      logLocal("SQL", `INSERT INTO users (id, name, phone, role) VALUES (${newUser.id}, '${newUser.name}', '${newUser.phone}', '${newUser.role}');`);
+      logLocal("SQL", `INSERT INTO wallets (user_id, balance) VALUES (${newWallet.user_id}, 500);`);
+      logLocal("SYSTEM", `Agent ${agent.name} registered new ${customerRole}: ${customerName}`);
+      saveLocalDb(db);
+
+      return simulateResponse(201, {
+        message: "Account registered successfully",
+        user: { id: newUser.id, name: newUser.name, phone: newUser.phone, role: newUser.role }
+      });
+    }
+
+    if (urlStr.includes("/api/v1/login")) {
+      const { phone, pin } = body;
+      logLocal("API", `LOCAL POST /api/v1/login - Phone: ${phone}`);
+
+      const user = db.users.find((u: any) => u.phone === phone);
+      if (!user || user.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Invalid phone number or PIN" });
+      }
+
+      const wallet = db.wallets.find((w: any) => w.user_id === user.id);
+      const mockToken = `jwt-token-header.${btoa(JSON.stringify({ userId: user.id, phone: user.phone }))}.mocksignature`;
+
+      logLocal("SYSTEM", `User login successful: ${user.name} (${user.role})`);
+      return simulateResponse(200, {
+        token: mockToken,
+        user: {
+          id: user.id,
+          name: user.name,
+          phone: user.phone,
+          role: user.role,
+          balance: wallet ? wallet.balance : 0
+        }
+      });
+    }
+
+    if (urlStr.includes("/api/v1/admin/login")) {
+      const { username, password } = body;
+      logLocal("API", `LOCAL POST /api/v1/admin/login - Username: ${username}`);
+
+      const matchedAdmin = db.admin_users?.find(
+        (u: any) => u.username.toLowerCase() === username.toLowerCase() && u.password_hash === password
+      );
+
+      if (matchedAdmin || (username === "admin" && password === "password123")) {
+        logLocal("SYSTEM", `Admin authentication successful: ${username}`);
+        return simulateResponse(200, {
+          success: true,
+          token: "mock-admin-jwt-token-xyz123",
+          role: "Administrator"
+        });
+      } else {
+        return simulateResponse(401, { error: "Invalid admin credentials" });
+      }
+    }
+
+    if (urlStr.includes("/api/v1/admin/register")) {
+      const { username, password, serverKey } = body;
+      logLocal("API", `LOCAL POST /api/v1/admin/register - Username: ${username}`);
+
+      if (!username || !password || !serverKey) {
+        return simulateResponse(400, { error: "All fields are required" });
+      }
+
+      if (serverKey !== "ADMIN_KEY_2026") {
+        return simulateResponse(403, { error: "Invalid Admin Server Key" });
+      }
+
+      const existing = db.admin_users?.find((u: any) => u.username.toLowerCase() === username.toLowerCase());
+      if (existing) {
+        return simulateResponse(409, { error: "Username already exists" });
+      }
+
+      if (!db.admin_users) {
+        db.admin_users = [{ username: "admin", password_hash: "password123" }];
+      }
+
+      db.admin_users.push({ username, password_hash: password });
+      logLocal("SYSTEM", `Admin registered successfully: ${username}`);
+      saveLocalDb(db);
+
+      return simulateResponse(201, { message: "Admin registered successfully!" });
+    }
+
+    if (urlStr.includes("/api/v1/transactions")) {
+      const urlObj = new URL(urlStr, window.location.origin);
+      const phone = urlObj.searchParams.get("phone");
+      let list = db.transactions;
+      if (phone) {
+        list = list.filter((t: any) => t.sender_phone === phone || t.receiver_phone === phone);
+      }
+      list.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      return simulateResponse(200, list);
+    }
+
+    if (urlStr.includes("/api/v1/users")) {
+      const detailed = db.users.map((u: any) => {
+        const wallet = db.wallets.find((w: any) => w.user_id === u.id);
+        return {
+          ...u,
+          balance: wallet ? wallet.balance : 0,
+          pending_balance: wallet ? wallet.pending_balance : 0
+        };
+      });
+      return simulateResponse(200, detailed);
+    }
+
+    if (urlStr.includes("/api/v1/admin/reset")) {
+      localStorage.removeItem("ROYAL_BANK_LOCAL_DB");
+      const freshDb = getLocalDb();
+      return simulateResponse(200, { message: "Database re-seeded successfully." });
+    }
+
+    if (urlStr.includes("/api/v1/send-money")) {
+      const { senderPhone, receiverPhone, amount, pin } = body;
+      const transferAmount = Number(amount);
+      const fee = transferAmount >= 500 ? 5 : 0;
+      const total = transferAmount + fee;
+
+      const sender = db.users.find((u: any) => u.phone === senderPhone);
+      if (!sender || sender.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Incorrect security PIN" });
+      }
+
+      const receiver = db.users.find((u: any) => u.phone === receiverPhone);
+      if (!receiver) {
+        return simulateResponse(404, { error: "Receiver phone number not registered" });
+      }
+
+      if (receiver.role !== "Customer") {
+        return simulateResponse(400, { error: "Send Money is only allowed to other Customer accounts" });
+      }
+
+      const senderWallet = db.wallets.find((w: any) => w.user_id === sender.id);
+      if (!senderWallet || senderWallet.balance < total) {
+        return simulateResponse(400, { error: "Insufficient balance for this transaction" });
+      }
+
+      const receiverWallet = db.wallets.find((w: any) => w.user_id === receiver.id);
+      if (!receiverWallet) return simulateResponse(500, { error: "Receiver wallet missing" });
+
+      senderWallet.balance -= total;
+      receiverWallet.balance += transferAmount;
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Send Money",
+        sender_phone: senderPhone,
+        receiver_phone: receiverPhone,
+        amount: transferAmount,
+        fee,
+        txn_id: generateTxId(),
+        status: "Success",
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SQL", `UPDATE wallets SET balance = balance - ${total} WHERE id = ${senderWallet.id};`);
+      logLocal("SYSTEM", `SUCCESS: BDT ${transferAmount} transferred from ${senderPhone} to ${receiverPhone}.`);
+      saveLocalDb(db);
+
+      return simulateResponse(200, { message: "Transfer successful", transaction: txn, sender_balance: senderWallet.balance });
+    }
+
+    if (urlStr.includes("/api/v1/cash-out")) {
+      const { senderPhone, receiverPhone, amount, pin } = body;
+      const transferAmount = Number(amount);
+      const fee = transferAmount * 0.015;
+      const total = transferAmount + fee;
+
+      const sender = db.users.find((u: any) => u.phone === senderPhone);
+      if (!sender || sender.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Incorrect security PIN" });
+      }
+
+      const agent = db.users.find((u: any) => u.phone === receiverPhone && u.role === "Agent");
+      if (!agent) {
+        return simulateResponse(404, { error: "Agent phone number not registered" });
+      }
+
+      const senderWallet = db.wallets.find((w: any) => w.user_id === sender.id);
+      if (!senderWallet || senderWallet.balance < total) {
+        return simulateResponse(400, { error: "Insufficient balance" });
+      }
+
+      senderWallet.balance -= total;
+      senderWallet.pending_balance += total;
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Cash Out",
+        sender_phone: senderPhone,
+        receiver_phone: receiverPhone,
+        amount: transferAmount,
+        fee,
+        txn_id: generateTxId(),
+        status: "Pending",
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SYSTEM", `Cash-out requested of BDT ${transferAmount} by ${senderPhone}`);
+      saveLocalDb(db);
+
+      return simulateResponse(200, { message: "Cash-out request submitted. Waiting for agent approval.", transaction: txn, sender_balance: senderWallet.balance });
+    }
+
+    if (urlStr.includes("/api/v1/cash-in")) {
+      const { senderPhone, receiverPhone, amount, pin } = body;
+      const transferAmount = Number(amount);
+
+      const agent = db.users.find((u: any) => u.phone === senderPhone && u.role === "Agent");
+      if (!agent || agent.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Incorrect Agent PIN" });
+      }
+
+      const receiver = db.users.find((u: any) => u.phone === receiverPhone);
+      if (!receiver) {
+        return simulateResponse(404, { error: "Receiver account not registered" });
+      }
+
+      const agentWallet = db.wallets.find((w: any) => w.user_id === agent.id);
+      if (!agentWallet || agentWallet.balance < transferAmount) {
+        return simulateResponse(400, { error: "Insufficient balance in Agent float" });
+      }
+
+      const receiverWallet = db.wallets.find((w: any) => w.user_id === receiver.id);
+      if (!receiverWallet) return simulateResponse(500, { error: "Receiver wallet not found" });
+
+      agentWallet.balance -= transferAmount;
+      receiverWallet.balance += transferAmount;
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Cash In",
+        sender_phone: senderPhone,
+        receiver_phone: receiverPhone,
+        amount: transferAmount,
+        fee: 0,
+        txn_id: generateTxId(),
+        status: "Success",
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SYSTEM", `SUCCESS: Cash In of BDT ${transferAmount} completed.`);
+      saveLocalDb(db);
+
+      return simulateResponse(200, { message: "Cash In successful", transaction: txn, sender_balance: agentWallet.balance });
+    }
+
+    if (urlStr.includes("/api/v1/recharge")) {
+      const { senderPhone, receiverPhone, amount, pin } = body;
+      const transferAmount = Number(amount);
+
+      const user = db.users.find((u: any) => u.phone === senderPhone);
+      if (!user || user.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Incorrect PIN" });
+      }
+
+      const wallet = db.wallets.find((w: any) => w.user_id === user.id);
+      if (!wallet || wallet.balance < transferAmount) {
+        return simulateResponse(400, { error: "Insufficient balance" });
+      }
+
+      wallet.balance -= transferAmount;
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Mobile Recharge",
+        sender_phone: senderPhone,
+        receiver_phone: receiverPhone,
+        amount: transferAmount,
+        fee: 0,
+        txn_id: generateTxId(),
+        status: "Success",
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SYSTEM", `Mobile Recharge of BDT ${transferAmount} successful.`);
+      saveLocalDb(db);
+
+      return simulateResponse(200, { message: "Recharge successful", transaction: txn, sender_balance: wallet.balance });
+    }
+
+    if (urlStr.includes("/api/v1/merchant-payment")) {
+      const { senderPhone, receiverPhone, amount, pin } = body;
+      const transferAmount = Number(amount);
+
+      const customer = db.users.find((u: any) => u.phone === senderPhone);
+      if (!customer || customer.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Incorrect PIN" });
+      }
+
+      const merchant = db.users.find((u: any) => u.phone === receiverPhone && u.role === "Merchant");
+      if (!merchant) {
+        return simulateResponse(404, { error: "Merchant number not registered" });
+      }
+
+      const customerWallet = db.wallets.find((w: any) => w.user_id === customer.id);
+      if (!customerWallet || customerWallet.balance < transferAmount) {
+        return simulateResponse(400, { error: "Insufficient balance" });
+      }
+
+      const merchantWallet = db.wallets.find((w: any) => w.user_id === merchant.id);
+      if (!merchantWallet) return simulateResponse(500, { error: "Merchant wallet not found" });
+
+      customerWallet.balance -= transferAmount;
+      merchantWallet.balance += transferAmount;
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Merchant Payment",
+        sender_phone: senderPhone,
+        receiver_phone: receiverPhone,
+        amount: transferAmount,
+        fee: 0,
+        txn_id: generateTxId(),
+        status: "Success",
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SYSTEM", `Merchant Payment of BDT ${transferAmount} successful.`);
+      saveLocalDb(db);
+
+      return simulateResponse(200, { message: "Payment successful", transaction: txn, sender_balance: customerWallet.balance });
+    }
+
+    if (urlStr.includes("/api/v1/pay-bill")) {
+      const { senderPhone, receiverPhone, amount, pin } = body;
+      const transferAmount = Number(amount);
+
+      const user = db.users.find((u: any) => u.phone === senderPhone);
+      if (!user || user.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Incorrect PIN" });
+      }
+
+      const wallet = db.wallets.find((w: any) => w.user_id === user.id);
+      if (!wallet || wallet.balance < transferAmount) {
+        return simulateResponse(400, { error: "Insufficient balance" });
+      }
+
+      wallet.balance -= transferAmount;
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Pay Bill",
+        sender_phone: senderPhone,
+        receiver_phone: receiverPhone,
+        amount: transferAmount,
+        fee: 0,
+        txn_id: generateTxId(),
+        status: "Success",
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SYSTEM", `Utility Bill Payment of BDT ${transferAmount} successful.`);
+      saveLocalDb(db);
+
+      return simulateResponse(200, { message: "Bill paid successfully", transaction: txn, sender_balance: wallet.balance });
+    }
+
+    if (urlStr.includes("/api/v1/drive-offer")) {
+      const { senderPhone, receiverPhone, offerName, amount, pin } = body;
+      const packAmount = Number(amount);
+
+      const user = db.users.find((u: any) => u.phone === senderPhone);
+      if (!user || user.pin_hash !== `sha256$simulated$${pin}`) {
+        return simulateResponse(401, { error: "Incorrect PIN" });
+      }
+
+      const wallet = db.wallets.find((w: any) => w.user_id === user.id);
+      if (!wallet || wallet.balance < packAmount) {
+        return simulateResponse(400, { error: "Insufficient balance" });
+      }
+
+      wallet.balance -= packAmount;
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Drive Offer" as const,
+        sender_phone: senderPhone,
+        receiver_phone: receiverPhone,
+        amount: packAmount,
+        fee: 0,
+        txn_id: generateTxId(),
+        status: "Pending" as const,
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SYSTEM", `Drive Offer request created for ${receiverPhone}`);
+      saveLocalDb(db);
+
+      return simulateResponse(200, { message: "Drive recharge request pending admin approval", transaction: txn, sender_balance: wallet.balance });
+    }
+
+    if (urlStr.includes("/api/v1/add-money")) {
+      const { senderPhone, method, amount, txnId } = body;
+      const addAmount = Number(amount);
+
+      const user = db.users.find((u: any) => u.phone === senderPhone);
+      if (!user) return simulateResponse(404, { error: "User not found" });
+
+      const duplicate = db.transactions.find((t: any) => t.txn_id === txnId);
+      if (duplicate) return simulateResponse(409, { error: "Duplicate Transaction ID" });
+
+      const txn = {
+        id: db.transactions.length + 1,
+        type: "Add Money" as const,
+        sender_phone: senderPhone,
+        receiver_phone: method,
+        amount: addAmount,
+        fee: 0,
+        txn_id: txnId,
+        status: "Pending" as const,
+        timestamp: new Date().toISOString()
+      };
+      db.transactions.push(txn);
+
+      logLocal("SYSTEM", `Pending Add Money request of BDT ${addAmount} submitted.`);
+      saveLocalDb(db);
+
+      return simulateResponse(201, { message: "Add money request submitted successfully", transaction: txn });
+    }
+
+    if (urlStr.includes("/api/v1/admin/add-money/approve")) {
+      const { transactionId } = body;
+      const txn = db.transactions.find((t: any) => t.txn_id === transactionId);
+      if (!txn || txn.status !== "Pending") return simulateResponse(400, { error: "Invalid transaction" });
+
+      const user = db.users.find((u: any) => u.phone === txn.sender_phone);
+      const wallet = user ? db.wallets.find((w: any) => w.user_id === user.id) : null;
+      if (wallet) {
+        wallet.balance += txn.amount;
+        txn.status = "Success";
+        logLocal("SYSTEM", `Add Money request approved for user ${txn.sender_phone}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { message: "Approved successfully", transaction: txn });
+      }
+      return simulateResponse(404, { error: "Wallet not found" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/add-money/reject")) {
+      const { transactionId } = body;
+      const txn = db.transactions.find((t: any) => t.txn_id === transactionId);
+      if (!txn || txn.status !== "Pending") return simulateResponse(400, { error: "Invalid transaction" });
+
+      txn.status = "Rejected";
+      logLocal("SYSTEM", `Add Money request rejected for user ${txn.sender_phone}`);
+      saveLocalDb(db);
+      return simulateResponse(200, { message: "Rejected successfully", transaction: txn });
+    }
+
+    if (urlStr.includes("/api/v1/admin/cashout/approve")) {
+      const { transactionId } = body;
+      const txn = db.transactions.find((t: any) => t.txn_id === transactionId);
+      if (!txn || txn.status !== "Pending") return simulateResponse(400, { error: "Invalid transaction" });
+
+      const sender = db.users.find((u: any) => u.phone === txn.sender_phone);
+      const agent = db.users.find((u: any) => u.phone === txn.receiver_phone);
+      
+      const senderWallet = sender ? db.wallets.find((w: any) => w.user_id === sender.id) : null;
+      const agentWallet = agent ? db.wallets.find((w: any) => w.user_id === agent.id) : null;
+
+      if (senderWallet && agentWallet) {
+        const total = txn.amount + txn.fee;
+        senderWallet.pending_balance -= total;
+        agentWallet.balance += txn.amount;
+        txn.status = "Success";
+        logLocal("SYSTEM", `Cash Out request approved from ${txn.sender_phone}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { message: "Cashout approved", transaction: txn });
+      }
+      return simulateResponse(404, { error: "Wallets missing" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/cashout/reject")) {
+      const { transactionId } = body;
+      const txn = db.transactions.find((t: any) => t.txn_id === transactionId);
+      if (!txn || txn.status !== "Pending") return simulateResponse(400, { error: "Invalid transaction" });
+
+      const sender = db.users.find((u: any) => u.phone === txn.sender_phone);
+      const senderWallet = sender ? db.wallets.find((w: any) => w.user_id === sender.id) : null;
+
+      if (senderWallet) {
+        const total = txn.amount + txn.fee;
+        senderWallet.pending_balance -= total;
+        senderWallet.balance += total;
+        txn.status = "Rejected";
+        logLocal("SYSTEM", `Cash Out request rejected for user ${txn.sender_phone}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { message: "Cashout rejected", transaction: txn });
+      }
+      return simulateResponse(404, { error: "Wallet missing" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/drive-offer/approve")) {
+      const { transactionId } = body;
+      const txn = db.transactions.find((t: any) => t.txn_id === transactionId);
+      if (txn) {
+        txn.status = "Success";
+        logLocal("SYSTEM", `Drive Offer approved for ${txn.sender_phone}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { message: "Drive approved", transaction: txn });
+      }
+      return simulateResponse(404, { error: "Transaction not found" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/drive-offer/reject")) {
+      const { transactionId } = body;
+      const txn = db.transactions.find((t: any) => t.txn_id === transactionId);
+      if (txn && txn.status === "Pending") {
+        txn.status = "Rejected";
+        const sender = db.users.find((u: any) => u.phone === txn.sender_phone);
+        const wallet = sender ? db.wallets.find((w: any) => w.user_id === sender.id) : null;
+        if (wallet) {
+          wallet.balance += txn.amount;
+        }
+        logLocal("SYSTEM", `Drive Offer rejected and refunded for ${txn.sender_phone}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { message: "Drive rejected", transaction: txn });
+      }
+      return simulateResponse(404, { error: "Transaction not found" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/drive-offers") && method === "POST") {
+      const { operator, name, regular, price } = body;
+      const reg = Number(regular);
+      const prc = Number(price);
+      const newId = db.drive_offers.length > 0 ? Math.max(...db.drive_offers.map((o: any) => o.id)) + 1 : 1;
+      const newOffer = { id: newId, operator, name, regular: reg, price: prc, save: reg - prc };
+      db.drive_offers.push(newOffer);
+      logLocal("SYSTEM", `Admin added drive offer: ${name}`);
+      saveLocalDb(db);
+      return simulateResponse(201, newOffer);
+    }
+
+    if (urlStr.includes("/api/v1/admin/drive-offers/") && method === "PUT") {
+      const parts = urlStr.split("/");
+      const id = Number(parts[parts.length - 1]);
+      const offer = db.drive_offers.find((o: any) => o.id === id);
+      if (offer) {
+        if (body.operator) offer.operator = body.operator;
+        if (body.name) offer.name = body.name;
+        if (body.regular) offer.regular = Number(body.regular);
+        if (body.price) offer.price = Number(body.price);
+        offer.save = offer.regular - offer.price;
+        logLocal("SYSTEM", `Admin updated drive offer id: ${id}`);
+        saveLocalDb(db);
+        return simulateResponse(200, offer);
+      }
+      return simulateResponse(404, { error: "Offer not found" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/drive-offers/") && method === "DELETE") {
+      const parts = urlStr.split("/");
+      const id = Number(parts[parts.length - 1]);
+      const index = db.drive_offers.findIndex((o: any) => o.id === id);
+      if (index !== -1) {
+        db.drive_offers.splice(index, 1);
+        logLocal("SYSTEM", `Admin deleted drive offer id: ${id}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { success: true });
+      }
+      return simulateResponse(404, { error: "Offer not found" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/notices") && method === "POST") {
+      const { title, content } = body;
+      const newId = db.notices.length > 0 ? Math.max(...db.notices.map((n: any) => n.id)) + 1 : 1;
+      const notice = { id: newId, title, content, timestamp: new Date().toISOString() };
+      db.notices.push(notice);
+      logLocal("SYSTEM", `Admin posted notice: ${title}`);
+      saveLocalDb(db);
+      return simulateResponse(201, notice);
+    }
+
+    if (urlStr.includes("/api/v1/admin/notices/") && method === "DELETE") {
+      const parts = urlStr.split("/");
+      const id = Number(parts[parts.length - 1]);
+      const index = db.notices.findIndex((n: any) => n.id === id);
+      if (index !== -1) {
+        db.notices.splice(index, 1);
+        logLocal("SYSTEM", `Admin deleted notice id: ${id}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { success: true });
+      }
+      return simulateResponse(404, { error: "Notice not found" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/settlement") && method === "PUT") {
+      const { bank_name, account_no, routing_no } = body;
+      db.settlement_config = { bank_name, account_no, routing_no };
+      logLocal("SYSTEM", `Admin updated settlement bank to ${bank_name}`);
+      saveLocalDb(db);
+      return simulateResponse(200, db.settlement_config);
+    }
+
+    if (urlStr.includes("/api/v1/admin/users/") && method === "PUT") {
+      const parts = urlStr.split("/");
+      const id = Number(parts[parts.length - 1]);
+      const user = db.users.find((u: any) => u.id === id);
+      const wallet = db.wallets.find((w: any) => w.user_id === id);
+      if (user) {
+        if (body.name) user.name = body.name;
+        if (body.role) user.role = body.role;
+        if (body.status) user.status = body.status;
+        if (body.pin) user.pin_hash = `sha256$simulated$${body.pin}`;
+        if (wallet && body.balance !== undefined) {
+          wallet.balance = Number(body.balance);
+        }
+        logLocal("SYSTEM", `Admin updated user profile: ${user.name}`);
+        saveLocalDb(db);
+        return simulateResponse(200, { user, wallet });
+      }
+      return simulateResponse(404, { error: "User not found" });
+    }
+
+    if (urlStr.includes("/api/v1/admin/add-money/config") && method === "PUT") {
+      const { bkash, nagad, rocket } = body;
+      db.add_money_methods = { bkash, nagad, rocket };
+      logLocal("SYSTEM", `Admin updated Gateway Numbers: bKash ${bkash}, Nagad ${nagad}`);
+      saveLocalDb(db);
+      return simulateResponse(200, { message: "Add Money config updated successfully" });
+    }
+
+    return simulateResponse(404, { error: `Endpoint ${urlStr} not simulated` });
+  } catch (err) {
+    console.error("Local DB simulation error:", err);
+    return simulateResponse(500, { error: "Internal simulation failure" });
+  }
+};
+
+const fetch = customFetch;
+
 export default function App() {
   // Localization state
   const [lang, setLang] = useState<"bn" | "en">("bn");
@@ -293,6 +1163,14 @@ export default function App() {
   const [adminError, setAdminError] = useState("");
   const [adminTab, setAdminTab] = useState<"pending" | "offers" | "users" | "logs" | "notices" | "settlement" | "transactions">("pending");
   const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [showAdminRegister, setShowAdminRegister] = useState(false);
+  const [adminRegUsername, setAdminRegUsername] = useState("");
+  const [adminRegPassword, setAdminRegPassword] = useState("");
+  const [adminRegConfirmPassword, setAdminRegConfirmPassword] = useState("");
+  const [adminServerKey, setAdminServerKey] = useState("");
+  const [adminRegError, setAdminRegError] = useState("");
+  const [adminRegSuccess, setAdminRegSuccess] = useState("");
+  const [isAdminRegistering, setIsAdminRegistering] = useState(false);
 
   // Database Mirror States
   const [dbState, setDbState] = useState<{
@@ -306,6 +1184,11 @@ export default function App() {
       account_no: string;
       routing_no: string;
     };
+    add_money_methods?: {
+      bkash: string;
+      nagad: string;
+      rocket: string;
+    };
   }>({
     users: [],
     wallets: [],
@@ -316,6 +1199,11 @@ export default function App() {
       bank_name: "",
       account_no: "",
       routing_no: ""
+    },
+    add_money_methods: {
+      bkash: "01789456123",
+      nagad: "01987654321",
+      rocket: "01512345678"
     }
   });
 
@@ -336,6 +1224,20 @@ export default function App() {
   const [settlementRoutingNo, setSettlementRoutingNo] = useState("");
   const [isSavingSettlement, setIsSavingSettlement] = useState(false);
 
+  // User Add Money Inputs
+  const [addMoneyMethod, setAddMoneyMethod] = useState<"bkash" | "nagad" | "rocket">("bkash");
+  const [addMoneyAmount, setAddMoneyAmount] = useState("");
+  const [addMoneyTxnId, setAddMoneyTxnId] = useState("");
+  const [addMoneyError, setAddMoneyError] = useState("");
+  const [addMoneySuccess, setAddMoneySuccess] = useState("");
+  const [isSubmittingAddMoney, setIsSubmittingAddMoney] = useState(false);
+
+  // Admin Add Money Configuration Inputs
+  const [adminBkashNo, setAdminBkashNo] = useState("");
+  const [adminNagadNo, setAdminNagadNo] = useState("");
+  const [adminRocketNo, setAdminRocketNo] = useState("");
+  const [isSavingAddMoneyConfig, setIsSavingAddMoneyConfig] = useState(false);
+
   // Admin User Edit Profile Inputs
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [editUserName, setEditUserName] = useState("");
@@ -353,7 +1255,12 @@ export default function App() {
       setSettlementAccountNo(dbState.settlement_config.account_no || "");
       setSettlementRoutingNo(dbState.settlement_config.routing_no || "");
     }
-  }, [dbState?.settlement_config]);
+    if (dbState?.add_money_methods) {
+      setAdminBkashNo(dbState.add_money_methods.bkash || "");
+      setAdminNagadNo(dbState.add_money_methods.nagad || "");
+      setAdminRocketNo(dbState.add_money_methods.rocket || "");
+    }
+  }, [dbState?.settlement_config, dbState?.add_money_methods]);
   const [crudRegular, setCrudRegular] = useState("");
   const [crudPrice, setCrudPrice] = useState("");
 
@@ -649,6 +1556,87 @@ export default function App() {
     }
   };
 
+  // User Add Money Request Submission
+  const handleAddMoneySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddMoneyError("");
+    setAddMoneySuccess("");
+
+    const parsedAmount = Number(addMoneyAmount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setAddMoneyError(lang === "bn" ? "সঠিক পরিমাণ প্রবেশ করান" : "Please enter a valid amount");
+      return;
+    }
+
+    if (!addMoneyTxnId.trim() || addMoneyTxnId.trim().length < 4) {
+      setAddMoneyError(
+        lang === "bn"
+          ? "সঠিক ট্রানজেকশন আইডি প্রবেশ করান (অন্তত ৪ ডিজিট)"
+          : "Please enter a valid Transaction ID (at least 4 digits)"
+      );
+      return;
+    }
+
+    if (!loggedUser) return;
+
+    setIsSubmittingAddMoney(true);
+    try {
+      const res = await fetch("/api/v1/add-money", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          senderPhone: loggedUser.phone,
+          method: addMoneyMethod === "bkash" ? "bKash" : addMoneyMethod === "nagad" ? "Nagad" : "Rocket",
+          amount: parsedAmount,
+          txnId: addMoneyTxnId.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setAddMoneySuccess(
+          lang === "bn"
+            ? `৳${parsedAmount} অ্যাড মানি রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিনের অনুমোদনের জন্য অপেক্ষা করুন।`
+            : `Add Money request of ৳${parsedAmount} submitted successfully! Waiting for admin approval.`
+        );
+        setAddMoneyAmount("");
+        setAddMoneyTxnId("");
+        await refreshDbState();
+      } else {
+        setAddMoneyError(data.error || "An error occurred");
+      }
+    } catch (err) {
+      setAddMoneyError("Network error occurred");
+    } finally {
+      setIsSubmittingAddMoney(false);
+    }
+  };
+
+  // Admin Add Money Config Save
+  const handleAddMoneyConfigSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adminBkashNo.trim() || !adminNagadNo.trim() || !adminRocketNo.trim()) return;
+    setIsSavingAddMoneyConfig(true);
+    try {
+      const response = await fetch("/api/v1/admin/add-money/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bkash: adminBkashNo,
+          nagad: adminNagadNo,
+          rocket: adminRocketNo,
+        }),
+      });
+      if (response.ok) {
+        await refreshDbState();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSavingAddMoneyConfig(false);
+    }
+  };
+
   // Admin Notice Creation
   const handleNoticeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -765,15 +1753,80 @@ export default function App() {
   };
 
   // ADMIN ACTION HANDLERS
-  const handleAdminLoginSubmit = (e: React.FormEvent) => {
+  const handleAdminLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAdminError("");
-    if (adminUsername === "admin" && adminPassword === "password123") {
-      setIsAdminMode(true);
-      setAdminTab("pending");
-      setAdminError("");
-    } else {
-      setAdminError(lang === "bn" ? "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" : "Invalid username or password!");
+    try {
+      const res = await fetch("/api/v1/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: adminUsername, password: adminPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIsAdminMode(true);
+        setAdminTab("pending");
+        setAdminError("");
+      } else {
+        setAdminError(data.error || (lang === "bn" ? "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" : "Invalid username or password!"));
+      }
+    } catch (err) {
+      if (adminUsername === "admin" && adminPassword === "password123") {
+        setIsAdminMode(true);
+        setAdminTab("pending");
+        setAdminError("");
+      } else {
+        setAdminError(lang === "bn" ? "সার্ভার সংযোগ ত্রুটি!" : "Server connection failure!");
+      }
+    }
+  };
+
+  const handleAdminRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAdminRegError("");
+    setAdminRegSuccess("");
+
+    if (!adminRegUsername || !adminRegPassword || !adminRegConfirmPassword || !adminServerKey) {
+      setAdminRegError(lang === "bn" ? "সবগুলো ঘর পূরণ করা আবশ্যক!" : "All fields are required!");
+      return;
+    }
+
+    if (adminRegPassword !== adminRegConfirmPassword) {
+      setAdminRegError(lang === "bn" ? "পাসওয়ার্ড দুটি মেলেনি!" : "Passwords do not match!");
+      return;
+    }
+
+    setIsAdminRegistering(true);
+    try {
+      const response = await fetch("/api/v1/admin/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: adminRegUsername,
+          password: adminRegPassword,
+          serverKey: adminServerKey
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setAdminRegSuccess(lang === "bn" ? "এডমিন নিবন্ধন সফল হয়েছে! অনুগ্রহ করে লগইন করুন।" : "Admin registration successful! Please login.");
+        setAdminRegUsername("");
+        setAdminRegPassword("");
+        setAdminRegConfirmPassword("");
+        setAdminServerKey("");
+        await refreshDbState();
+        setTimeout(() => {
+          setShowAdminRegister(false);
+          setAdminRegSuccess("");
+        }, 2500);
+      } else {
+        setAdminRegError(data.error || (lang === "bn" ? "নিবন্ধন ব্যর্থ হয়েছে।" : "Registration failed"));
+      }
+    } catch (err) {
+      setAdminRegError(lang === "bn" ? "সার্ভার সংযোগ ত্রুটি!" : "Server connection error!");
+    } finally {
+      setIsAdminRegistering(false);
     }
   };
 
@@ -795,6 +1848,36 @@ export default function App() {
   const handleRejectCashout = async (txnId: string) => {
     try {
       const res = await fetch("/api/v1/admin/cashout/reject", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transactionId: txnId })
+      });
+      if (res.ok) {
+        await refreshDbState();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleApproveAddMoney = async (txnId: string) => {
+    try {
+      const res = await fetch("/api/v1/admin/add-money/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transactionId: txnId })
+      });
+      if (res.ok) {
+        await refreshDbState();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRejectAddMoney = async (txnId: string) => {
+    try {
+      const res = await fetch("/api/v1/admin/add-money/reject", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transactionId: txnId })
@@ -995,7 +2078,7 @@ export default function App() {
   const userTransactions = useMemo(() => {
     if (!loggedUser) return [];
     return dbState.transactions
-      .filter(t => t.sender_phone === loggedUser.phone || t.receiver_phone.includes(loggedUser.phone) || t.receiver_phone === loggedUser.phone)
+      .filter(t => t.sender_phone === loggedUser.phone || (t.receiver_phone && typeof t.receiver_phone === 'string' && t.receiver_phone.includes(loggedUser.phone)) || t.receiver_phone === loggedUser.phone)
       .sort((a, b) => b.id - a.id);
   }, [dbState.transactions, loggedUser?.phone]);
 
@@ -1203,73 +2286,206 @@ export default function App() {
                       </button>
                     </form>
                   ) : showAdminLogin ? (
-                    <form
-                      onSubmit={handleAdminLoginSubmit}
-                      className="space-y-4"
-                    >
-                      <div className="bg-red-50 border border-red-100 p-3 rounded-xl text-center mb-1">
-                        <span className="text-xs font-bold text-red-700">🛡️ SYSTEM ADMINISTRATION PORTAL</span>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
-                          Admin Username
-                        </label>
-                        <div className="relative">
-                          <Users className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
-                          <input
-                            id="admin-username"
-                            type="text"
-                            value={adminUsername}
-                            onChange={(e) => setAdminUsername(e.target.value)}
-                            placeholder="e.g. admin"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
-                          />
+                    showAdminRegister ? (
+                      <form
+                        onSubmit={handleAdminRegisterSubmit}
+                        className="space-y-4"
+                      >
+                        <div className="bg-red-50 border border-red-100 p-3 rounded-xl text-center mb-1">
+                          <span className="text-xs font-bold text-red-700">🛡️ CREATE ADMIN ACCOUNT</span>
                         </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
-                          Admin Password
-                        </label>
-                        <div className="relative">
-                          <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
-                          <input
-                            id="admin-password"
-                            type="password"
-                            value={adminPassword}
-                            onChange={(e) => setAdminPassword(e.target.value)}
-                            placeholder="e.g. password123"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
-                          />
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Admin Username
+                          </label>
+                          <div className="relative">
+                            <Users className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <input
+                              id="admin-reg-username"
+                              type="text"
+                              value={adminRegUsername}
+                              onChange={(e) => setAdminRegUsername(e.target.value)}
+                              placeholder="Choose Username"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            />
+                          </div>
                         </div>
-                      </div>
 
-                      {adminError && (
-                        <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-bold flex items-center gap-2 animate-shake">
-                          <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
-                          <span>{adminError}</span>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Password
+                          </label>
+                          <div className="relative">
+                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <input
+                              id="admin-reg-password"
+                              type="password"
+                              value={adminRegPassword}
+                              onChange={(e) => setAdminRegPassword(e.target.value)}
+                              placeholder="Password"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            />
+                          </div>
                         </div>
-                      )}
 
-                      <div className="flex gap-2 pt-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowAdminLogin(false);
-                            setAdminError("");
-                          }}
-                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer transition active:scale-95"
-                        >
-                          {lang === "bn" ? "ব্যবহারকারী লগইন" : "User Login"}
-                        </button>
-                        <button
-                          type="submit"
-                          className="flex-1 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-md transition active:scale-95"
-                        >
-                          {lang === "bn" ? "এডমিন লগইন" : "Admin Login"}
-                        </button>
-                      </div>
-                    </form>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Confirm Password
+                          </label>
+                          <div className="relative">
+                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <input
+                              id="admin-reg-confirm-password"
+                              type="password"
+                              value={adminRegConfirmPassword}
+                              onChange={(e) => setAdminRegConfirmPassword(e.target.value)}
+                              placeholder="Re-enter Password"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Admin Server Key (admin_server_key)
+                          </label>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <input
+                              id="admin-server-key"
+                              type="password"
+                              value={adminServerKey}
+                              onChange={(e) => setAdminServerKey(e.target.value)}
+                              placeholder="Enter Admin Server Key"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            />
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-medium block mt-1 px-1">
+                            {lang === "bn" ? "এডমিন রেজিস্ট্রেশনের জন্য এই সিক্রেট কি প্রয়োজন।" : "This secret key is required for admin registration."}
+                          </span>
+                        </div>
+
+                        {adminRegError && (
+                          <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-bold flex items-center gap-2 animate-shake">
+                            <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                            <span>{adminRegError}</span>
+                          </div>
+                        )}
+
+                        {adminRegSuccess && (
+                          <div className="p-3 bg-green-50 border border-green-100 rounded-xl text-xs text-green-600 font-bold flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 shrink-0 text-green-500" />
+                            <span>{adminRegSuccess}</span>
+                          </div>
+                        )}
+
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowAdminRegister(false);
+                              setAdminRegError("");
+                              setAdminRegSuccess("");
+                            }}
+                            className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer transition active:scale-95"
+                          >
+                            {lang === "bn" ? "লগইন স্ক্রিনে ফিরুন" : "Back to Login"}
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={isAdminRegistering}
+                            className="flex-1 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-md transition active:scale-95 flex items-center justify-center gap-1"
+                          >
+                            {isAdminRegistering ? (
+                              <RefreshCw className="w-3 h-3 animate-spin" />
+                            ) : null}
+                            <span>{lang === "bn" ? "নিবন্ধন করুন" : "Register"}</span>
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <form
+                        onSubmit={handleAdminLoginSubmit}
+                        className="space-y-4"
+                      >
+                        <div className="bg-red-50 border border-red-100 p-3 rounded-xl text-center mb-1">
+                          <span className="text-xs font-bold text-red-700">🛡️ SYSTEM ADMINISTRATION PORTAL</span>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Admin Username
+                          </label>
+                          <div className="relative">
+                            <Users className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <input
+                              id="admin-username"
+                              type="text"
+                              value={adminUsername}
+                              onChange={(e) => setAdminUsername(e.target.value)}
+                              placeholder="Username"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Admin Password
+                          </label>
+                          <div className="relative">
+                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <input
+                              id="admin-password"
+                              type="password"
+                              value={adminPassword}
+                              onChange={(e) => setAdminPassword(e.target.value)}
+                              placeholder="Password"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            />
+                          </div>
+                        </div>
+
+                        {adminError && (
+                          <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-bold flex items-center gap-2 animate-shake">
+                            <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                            <span>{adminError}</span>
+                          </div>
+                        )}
+
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowAdminLogin(false);
+                              setAdminError("");
+                            }}
+                            className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer transition active:scale-95"
+                          >
+                            {lang === "bn" ? "ব্যবহারকারী লগইন" : "User Login"}
+                          </button>
+                          <button
+                            type="submit"
+                            className="flex-1 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-md transition active:scale-95"
+                          >
+                            {lang === "bn" ? "এডমিন লগইন" : "Admin Login"}
+                          </button>
+                        </div>
+
+                        <div className="text-center pt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowAdminRegister(true);
+                              setAdminRegError("");
+                              setAdminRegSuccess("");
+                            }}
+                            className="text-xs text-red-600 hover:text-red-700 font-bold transition cursor-pointer"
+                          >
+                            📝 {lang === "bn" ? "নতুন এডমিন নিবন্ধন করুন" : "Register New Admin"}
+                          </button>
+                        </div>
+                      </form>
+                    )
                   ) : (
                     <form
                       onSubmit={(e) => {
@@ -1489,19 +2705,35 @@ export default function App() {
                             
                             <div className="text-[11px] text-slate-400 space-y-1 font-sans">
                               <p><span className="text-slate-500 font-medium">Customer:</span> {txn.sender_phone}</p>
-                              <p><span className="text-slate-500 font-medium">Recipient/Biller:</span> {txn.receiver_phone}</p>
+                              <p><span className="text-slate-500 font-medium">{txn.type === "Add Money" ? "Payment Method:" : "Recipient/Biller:"}</span> {txn.receiver_phone}</p>
                               <p><span className="text-slate-500 font-medium">Placed At:</span> {new Date(txn.timestamp).toLocaleString()}</p>
                             </div>
 
                             <div className="flex gap-2 pt-1">
                               <button
-                                onClick={() => txn.type === "Drive Offer" ? handleRejectDrive(txn.txn_id) : handleRejectCashout(txn.txn_id)}
+                                onClick={() => {
+                                  if (txn.type === "Drive Offer") {
+                                    handleRejectDrive(txn.txn_id);
+                                  } else if (txn.type === "Add Money") {
+                                    handleRejectAddMoney(txn.txn_id);
+                                  } else {
+                                    handleRejectCashout(txn.txn_id);
+                                  }
+                                }}
                                 className="flex-1 py-2 bg-slate-700 hover:bg-red-900 text-slate-300 hover:text-white font-bold text-xs rounded-lg transition active:scale-95 cursor-pointer"
                               >
                                 Reject
                               </button>
                               <button
-                                onClick={() => txn.type === "Drive Offer" ? handleApproveDrive(txn.txn_id) : handleApproveCashout(txn.txn_id)}
+                                onClick={() => {
+                                  if (txn.type === "Drive Offer") {
+                                    handleApproveDrive(txn.txn_id);
+                                  } else if (txn.type === "Add Money") {
+                                    handleApproveAddMoney(txn.txn_id);
+                                  } else {
+                                    handleApproveCashout(txn.txn_id);
+                                  }
+                                }}
                                 className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition active:scale-95 cursor-pointer shadow"
                               >
                                 Approve
@@ -1968,6 +3200,61 @@ export default function App() {
                           </div>
                         </div>
                       )}
+
+                      {/* ADD MONEY CONFIGURATION BOARD */}
+                      <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-xs space-y-3 shadow-md mt-4">
+                        <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider block">💸 Configure bKash/Nagad/Rocket Numbers</span>
+                        <p className="text-slate-300 font-medium leading-relaxed">
+                          Define the official bKash, Nagad, and Rocket mobile numbers where users send money to perform "Add Money" operations.
+                        </p>
+                        <form onSubmit={handleAddMoneyConfigSave} className="space-y-3 pt-2">
+                          <div>
+                            <label className="text-[10px] text-slate-400 font-bold block mb-1">bKash Number</label>
+                            <input
+                              type="tel"
+                              maxLength={11}
+                              value={adminBkashNo}
+                              onChange={(e) => setAdminBkashNo(e.target.value)}
+                              placeholder="e.g. 017XXXXXXXX"
+                              className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white font-medium"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-400 font-bold block mb-1">Nagad Number</label>
+                            <input
+                              type="tel"
+                              maxLength={11}
+                              value={adminNagadNo}
+                              onChange={(e) => setAdminNagadNo(e.target.value)}
+                              placeholder="e.g. 019XXXXXXXX"
+                              className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white font-medium"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-400 font-bold block mb-1">Rocket Number</label>
+                            <input
+                              type="tel"
+                              maxLength={11}
+                              value={adminRocketNo}
+                              onChange={(e) => setAdminRocketNo(e.target.value)}
+                              placeholder="e.g. 015XXXXXXXX"
+                              className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white font-medium"
+                              required
+                            />
+                          </div>
+                          <div className="flex justify-end pt-1">
+                            <button
+                              type="submit"
+                              disabled={isSavingAddMoneyConfig}
+                              className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold transition active:scale-95 cursor-pointer"
+                            >
+                              {isSavingAddMoneyConfig ? "Saving..." : "Save Gateway Numbers"}
+                            </button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   )}
 
@@ -2210,6 +3497,19 @@ export default function App() {
                                   {lang === "bn" ? "ইউজার নিবন্ধন" : "Register User"}
                                 </span>
                               </button>
+
+                              {/* Add Money */}
+                              <button
+                                onClick={() => navigateTo("add_money")}
+                                className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
+                              >
+                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-orange-200">
+                                  <FileText className="w-5 h-5 stroke-[2]" />
+                                </div>
+                                <span className="text-[10px] font-black text-slate-700 leading-tight">
+                                  {t.add_money}
+                                </span>
+                              </button>
                             </div>
                           </section>
                         ) : loggedUser.role === "Merchant" ? (
@@ -2232,6 +3532,19 @@ export default function App() {
                                 </div>
                                 <span className="text-[10px] font-black text-slate-700 leading-tight">
                                   Withdraw Money
+                                </span>
+                              </button>
+
+                              {/* Add Money */}
+                              <button
+                                onClick={() => navigateTo("add_money")}
+                                className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
+                              >
+                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-orange-200">
+                                  <FileText className="w-5 h-5 stroke-[2]" />
+                                </div>
+                                <span className="text-[10px] font-black text-slate-700 leading-tight">
+                                  {t.add_money}
                                 </span>
                               </button>
                             </div>
@@ -2284,12 +3597,12 @@ export default function App() {
                                   </span>
                                 </button>
 
-                                {/* Add Money (Client simulation only) */}
+                                {/* Add Money (Fully operational live database gateway) */}
                                 <button
                                   onClick={() => navigateTo("add_money")}
-                                  className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group opacity-65"
+                                  className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                                 >
-                                  <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200">
+                                  <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 border border-orange-200 transition duration-200">
                                     <FileText className="w-5 h-5 stroke-[2]" />
                                   </div>
                                   <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3355,6 +4668,144 @@ export default function App() {
                       </motion.div>
                     )}
 
+                    {/* SCREEN: ADD MONEY */}
+                    {currentScreen === "add_money" && (
+                      <motion.div
+                        key="add-money-screen"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100"
+                      >
+                        <div className="flex items-center gap-3 mb-4 select-none">
+                          <button
+                            onClick={() => {
+                              navigateTo("home");
+                              setAddMoneyError("");
+                              setAddMoneySuccess("");
+                            }}
+                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer animate-pulse font-bold"
+                          >
+                            ← Back
+                          </button>
+                          <h2 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                            📥 {lang === "bn" ? "অ্যাড মানি" : "Add Money"}
+                          </h2>
+                        </div>
+
+                        {/* Payment Method Selector */}
+                        <div className="mb-4">
+                          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wide mb-1.5">
+                            {lang === "bn" ? "পেমেন্ট মাধ্যম নির্বাচন করুন" : "Select Payment Method"}
+                          </label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {(["bkash", "nagad", "rocket"] as const).map((method) => {
+                              const isActive = addMoneyMethod === method;
+                              const colors = {
+                                bkash: "bg-pink-500 text-white border-pink-500",
+                                nagad: "bg-orange-600 text-white border-orange-600",
+                                rocket: "bg-purple-600 text-white border-purple-600",
+                              };
+                              const hoverColors = {
+                                bkash: "hover:bg-pink-50 hover:text-pink-600 border-pink-200 text-pink-600",
+                                nagad: "hover:bg-orange-50 hover:text-orange-600 border-orange-200 text-orange-600",
+                                rocket: "hover:bg-purple-50 hover:text-purple-600 border-purple-200 text-purple-600",
+                              };
+
+                              return (
+                                <button
+                                  key={method}
+                                  type="button"
+                                  onClick={() => {
+                                    setAddMoneyMethod(method);
+                                    setAddMoneyError("");
+                                    setAddMoneySuccess("");
+                                  }}
+                                  className={`py-2 px-1 rounded-xl text-xs font-black capitalize border transition text-center flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                                    isActive ? colors[method] : hoverColors[method]
+                                  }`}
+                                >
+                                  <span className="font-sans font-black tracking-wide">
+                                    {method === "bkash" ? "bKash" : method === "nagad" ? "Nagad" : "Rocket"}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Number Instruction Board */}
+                        <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 mb-4 text-center">
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                            {lang === "bn" ? "টাকা পাঠানোর অফিশিয়াল নম্বর" : "Official Receiver Number"}
+                          </span>
+                          <span className="text-lg font-black font-mono text-slate-800 tracking-wider block mt-1">
+                            {addMoneyMethod === "bkash" 
+                              ? (dbState.add_money_methods?.bkash || "01789456123")
+                              : addMoneyMethod === "nagad"
+                              ? (dbState.add_money_methods?.nagad || "01987654321")
+                              : (dbState.add_money_methods?.rocket || "01512345678")}
+                          </span>
+                          <p className="text-[10px] text-slate-500 leading-snug mt-1.5 px-2">
+                            {lang === "bn" 
+                              ? `উপরের নাম্বারে ক্যাশ-ইন বা সেন্ড মানি করুন। এরপর নিচে সঠিক পরিমাণ এবং ট্রানজেকশন আইডি (TxID) লিখে সাবমিট করুন।`
+                              : `Send Money or Cash-In to the number above. Then, enter the exact amount and Transaction ID (TxID) below to submit.`}
+                          </p>
+                        </div>
+
+                        <form onSubmit={handleAddMoneySubmit} className="space-y-4">
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wide mb-1">
+                              {lang === "bn" ? "টাকার পরিমাণ (৳)" : "Amount (৳)"}
+                            </label>
+                            <input
+                              type="number"
+                              required
+                              value={addMoneyAmount}
+                              onChange={(e) => setAddMoneyAmount(e.target.value)}
+                              placeholder="৳ 0.00"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wide mb-1">
+                              {lang === "bn" ? "ট্রানজেকশন আইডি (TxnID)" : "Transaction ID (TxnID)"}
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={addMoneyTxnId}
+                              onChange={(e) => setAddMoneyTxnId(e.target.value)}
+                              placeholder="e.g. TRX847291B"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black font-mono tracking-wider text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white uppercase"
+                            />
+                          </div>
+
+                          {addMoneyError && (
+                            <div className="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold leading-relaxed">
+                              ⚠️ {addMoneyError}
+                            </div>
+                          )}
+
+                          {addMoneySuccess && (
+                            <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold leading-relaxed">
+                              ✅ {addMoneySuccess}
+                            </div>
+                          )}
+
+                          <button
+                            type="submit"
+                            disabled={isSubmittingAddMoney}
+                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                          >
+                            {isSubmittingAddMoney ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
+                            <span>{lang === "bn" ? "অনুরোধ পাঠান" : "Submit Request"}</span>
+                          </button>
+                        </form>
+                      </motion.div>
+                    )}
+
                     {/* SCREEN: SUCCESS RECEIPT */}
                     {currentScreen === "success_receipt" && latestTxn && (
                       <motion.div
@@ -3451,7 +4902,7 @@ export default function App() {
                         {/* Transactions Statement List */}
                         <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
                           {userTransactions.map((tx) => {
-                            const isIncoming = tx.receiver_phone.includes(loggedUser.phone) || tx.receiver_phone === loggedUser.phone;
+                            const isIncoming = (tx.receiver_phone && typeof tx.receiver_phone === "string" && tx.receiver_phone.includes(loggedUser.phone)) || tx.receiver_phone === loggedUser.phone;
                             return (
                               <div
                                 key={tx.id}
@@ -3611,110 +5062,6 @@ export default function App() {
                         >
                           {lang === "bn" ? "লগ আউট করুন" : "Log Out"}
                         </button>
-
-                        {/* DISCREET SYSTEM CONTROL PANEL & POSTGRESQL VIEWS (Tucked away professionally) */}
-                        <div className="border-t border-slate-200/80 pt-2">
-                          <button
-                            type="button"
-                            onClick={() => setIsDiagOpen(!isDiagOpen)}
-                            className="w-full py-2 px-3.5 bg-slate-900 hover:bg-slate-950 text-slate-300 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-between transition cursor-pointer"
-                          >
-                            <span>⚙️ {t.diagnostic_panel}</span>
-                            <span>{isDiagOpen ? "▲ Close" : "▼ Open"}</span>
-                          </button>
-
-                          {isDiagOpen && (
-                            <div className="mt-3 bg-slate-900 text-slate-300 p-4 rounded-2xl border border-slate-850 space-y-4 text-[10px] font-medium leading-relaxed font-mono animate-slide-up select-text">
-                              <div>
-                                <p className="text-yellow-400 font-bold uppercase tracking-wider">🔒 DEVELOPER DECK & SQL TRANSACTION AUDITS</p>
-                                <p className="text-[9px] text-slate-400 mt-0.5 leading-snug">{t.diagnostics_desc}</p>
-                              </div>
-
-                              <button
-                                onClick={handleResetDB}
-                                className="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold text-[9px] uppercase tracking-wider rounded border border-red-500 transition active:scale-95 cursor-pointer"
-                              >
-                                ⚠️ {t.reset_db_btn}
-                              </button>
-
-                              {/* Users details */}
-                              <div className="space-y-1">
-                                <p className="text-sky-400 font-bold uppercase tracking-wider">👥 {t.active_users}</p>
-                                <div className="overflow-x-auto max-h-[140px] border border-slate-800 rounded bg-slate-950">
-                                  <table className="w-full text-left border-collapse text-[9px]">
-                                    <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 sticky top-0">
-                                      <tr>
-                                        <th className="p-1">Name</th>
-                                        <th className="p-1">Phone</th>
-                                        <th className="p-1">Role</th>
-                                        <th className="p-1 text-right">Balance</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-850">
-                                      {dbState.users.map((u) => {
-                                        const wallet = dbState.wallets.find(w => w.user_id === u.id);
-                                        return (
-                                          <tr key={u.id} className="hover:bg-slate-900">
-                                            <td className="p-1 font-bold">{u.name}</td>
-                                            <td className="p-1 text-slate-300">{u.phone}</td>
-                                            <td className="p-1 text-yellow-500">{u.role}</td>
-                                            <td className="p-1 text-right text-emerald-400 font-bold">৳{wallet?.balance}</td>
-                                          </tr>
-                                        );
-                                      })}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-
-                              {/* Transaction monitor ledger */}
-                              <div className="space-y-1">
-                                <p className="text-sky-400 font-bold uppercase tracking-wider">📊 {t.txn_history_global}</p>
-                                <div className="overflow-x-auto max-h-[140px] border border-slate-800 rounded bg-slate-950">
-                                  <table className="w-full text-left border-collapse text-[9px]">
-                                    <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 sticky top-0">
-                                      <tr>
-                                        <th className="p-1">TXN</th>
-                                        <th className="p-1">Type</th>
-                                        <th className="p-1">Sender</th>
-                                        <th className="p-1">Receiver</th>
-                                        <th className="p-1 text-right">Amount</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-850">
-                                      {dbState.transactions.map((tx) => (
-                                        <tr key={tx.id} className="hover:bg-slate-900">
-                                          <td className="p-1 font-bold text-red-400">{tx.txn_id}</td>
-                                          <td className="p-1">{tx.type}</td>
-                                          <td className="p-1">{tx.sender_phone}</td>
-                                          <td className="p-1 truncate max-w-[80px]">{tx.receiver_phone}</td>
-                                          <td className="p-1 text-right text-emerald-400 font-bold">৳{tx.amount}</td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-
-                              {/* Live raw SQL stream logs */}
-                              <div className="space-y-1">
-                                <p className="text-sky-400 font-bold uppercase tracking-wider">⚡ {t.live_sql_stream}</p>
-                                <div className="bg-slate-950 p-2.5 rounded border border-slate-800 max-h-[140px] overflow-y-auto space-y-1.5 text-[9px] leading-relaxed select-text">
-                                  {logs.map((log, idx) => (
-                                    <div key={idx} className="border-b border-slate-900 pb-1 flex flex-col">
-                                      <span className="text-[8px] text-slate-500">{new Date(log.timestamp).toLocaleTimeString()}</span>
-                                      <span className="text-slate-300 font-normal">
-                                        <span className="text-emerald-400 font-bold uppercase mr-1">[{log.type}]</span>
-                                        {log.message}
-                                      </span>
-                                    </div>
-                                  ))}
-                                  {logs.length === 0 && <span className="text-slate-500 italic">Waiting for SQL statements...</span>}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
 
                       </motion.div>
                     )}

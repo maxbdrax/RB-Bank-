@@ -61,6 +61,11 @@ interface DBLog {
   message: string;
 }
 
+interface AdminUser {
+  username: string;
+  password_hash: string;
+}
+
 // In-Memory Database State
 const DB = {
   users: [] as User[],
@@ -78,6 +83,9 @@ const DB = {
     nagad: "01987654321",
     rocket: "01512345678"
   },
+  admin_users: [
+    { username: "admin", password_hash: "password123" }
+  ] as AdminUser[],
   logs: [] as DBLog[],
 };
 
@@ -114,6 +122,9 @@ function seedDatabase() {
   DB.wallets = [];
   DB.transactions = [];
   DB.drive_offers = [];
+  if (!DB.admin_users || DB.admin_users.length === 0) {
+    DB.admin_users = [{ username: "admin", password_hash: "password123" }];
+  }
   DB.notices = [
     {
       id: 1,
@@ -307,7 +318,10 @@ async function startServer() {
 
   // USER AUTHENTICATION: REGISTER
   app.post("/api/v1/register", (req, res) => {
-    const { name, phone, role, pin } = req.body;
+    let { name, phone, role, pin } = req.body;
+    if (phone !== undefined && phone !== null) phone = String(phone);
+    if (pin !== undefined && pin !== null) pin = String(pin);
+
     logDB("API", `POST /api/v1/register - Phone: ${phone}, Role: ${role}`);
 
     if (!name || !phone || !role || !pin) {
@@ -370,7 +384,12 @@ async function startServer() {
 
   // AGENT SERVICE: REGISTER CUSTOMER OR MERCHANT
   app.post("/api/v1/agent/register-user", (req, res) => {
-    const { agentPhone, agentPin, customerName, customerPhone, customerRole, customerPin } = req.body;
+    let { agentPhone, agentPin, customerName, customerPhone, customerRole, customerPin } = req.body;
+    if (agentPhone !== undefined && agentPhone !== null) agentPhone = String(agentPhone);
+    if (agentPin !== undefined && agentPin !== null) agentPin = String(agentPin);
+    if (customerPhone !== undefined && customerPhone !== null) customerPhone = String(customerPhone);
+    if (customerPin !== undefined && customerPin !== null) customerPin = String(customerPin);
+
     logDB("API", `POST /api/v1/agent/register-user - Agent: ${agentPhone}, Target Phone: ${customerPhone}, Role: ${customerRole}`);
 
     if (!agentPhone || !agentPin || !customerName || !customerPhone || !customerRole || !customerPin) {
@@ -449,7 +468,10 @@ async function startServer() {
 
   // USER AUTHENTICATION: LOGIN
   app.post("/api/v1/login", (req, res) => {
-    const { phone, pin } = req.body;
+    let { phone, pin } = req.body;
+    if (phone !== undefined && phone !== null) phone = String(phone);
+    if (pin !== undefined && pin !== null) pin = String(pin);
+
     logDB("API", `POST /api/v1/login - Phone: ${phone}`);
 
     if (!phone || !pin) {
@@ -498,9 +520,12 @@ async function startServer() {
       return res.status(400).json({ error: "Username and password are required" });
     }
 
-    // High-security separate credentials as requested by user
-    if (username === "admin" && password === "password123") {
-      logDB("SYSTEM", "Admin authentication successful");
+    const matchedAdmin = DB.admin_users.find(
+      u => u.username.toLowerCase() === username.toLowerCase() && u.password_hash === password
+    );
+
+    if (matchedAdmin || (username === "admin" && password === "password123")) {
+      logDB("SYSTEM", `Admin authentication successful for: ${username}`);
       res.json({
         success: true,
         token: "mock-admin-jwt-token-xyz123",
@@ -510,6 +535,35 @@ async function startServer() {
       logDB("SYSTEM", `Admin login failed for username: ${username}`);
       res.status(401).json({ error: "Invalid admin credentials" });
     }
+  });
+
+  // ADMIN AUTHENTICATION: REGISTER
+  app.post("/api/v1/admin/register", (req, res) => {
+    const { username, password, serverKey } = req.body;
+    logDB("API", `POST /api/v1/admin/register - Username: ${username}`);
+
+    if (!username || !password || !serverKey) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (serverKey !== "ADMIN_KEY_2026") {
+      logDB("SYSTEM", `Admin registration failed: Invalid server key ${serverKey}`);
+      return res.status(403).json({ error: "Invalid Admin Server Key" });
+    }
+
+    const existing = DB.admin_users.find(u => u.username.toLowerCase() === username.toLowerCase());
+    if (existing) {
+      logDB("SYSTEM", `Admin registration failed: Username ${username} already exists`);
+      return res.status(409).json({ error: "Username already exists" });
+    }
+
+    DB.admin_users.push({
+      username,
+      password_hash: password
+    });
+
+    logDB("SYSTEM", `Admin registered successfully: ${username}`);
+    res.status(201).json({ message: "Admin registered successfully!" });
   });
 
   // GET ALL TRANSACTIONS
@@ -1403,7 +1457,10 @@ async function startServer() {
   // ADMIN: EDIT USER
   app.put("/api/v1/admin/users/:id", (req, res) => {
     const id = Number(req.params.id);
-    const { name, phone, role, balance, status, pin } = req.body;
+    let { name, phone, role, balance, status, pin } = req.body;
+    if (phone !== undefined && phone !== null) phone = String(phone);
+    if (pin !== undefined && pin !== null) pin = String(pin);
+
     logDB("API", `PUT /api/v1/admin/users/${id}`);
 
     const user = DB.users.find(u => u.id === id);
@@ -1423,8 +1480,8 @@ async function startServer() {
     if (name) user.name = name;
     if (role) user.role = role;
     if (status) user.status = status;
-    if (pin && pin.trim().length === 4) {
-      user.pin_hash = hashPIN(pin);
+    if (pin && String(pin).trim().length === 4) {
+      user.pin_hash = hashPIN(String(pin));
     }
 
     if (balance !== undefined) {
