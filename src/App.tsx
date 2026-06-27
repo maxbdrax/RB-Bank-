@@ -1251,14 +1251,26 @@ export default function App() {
 
   useEffect(() => {
     if (dbState?.settlement_config) {
-      setSettlementBankName(dbState.settlement_config.bank_name || "");
-      setSettlementAccountNo(dbState.settlement_config.account_no || "");
-      setSettlementRoutingNo(dbState.settlement_config.routing_no || "");
+      if (document.activeElement?.id !== "settlement-bank-name") {
+        setSettlementBankName(dbState.settlement_config.bank_name || "");
+      }
+      if (document.activeElement?.id !== "settlement-account-no") {
+        setSettlementAccountNo(dbState.settlement_config.account_no || "");
+      }
+      if (document.activeElement?.id !== "settlement-routing-no") {
+        setSettlementRoutingNo(dbState.settlement_config.routing_no || "");
+      }
     }
     if (dbState?.add_money_methods) {
-      setAdminBkashNo(dbState.add_money_methods.bkash || "");
-      setAdminNagadNo(dbState.add_money_methods.nagad || "");
-      setAdminRocketNo(dbState.add_money_methods.rocket || "");
+      if (document.activeElement?.id !== "admin-bkash-no") {
+        setAdminBkashNo(dbState.add_money_methods.bkash || "");
+      }
+      if (document.activeElement?.id !== "admin-nagad-no") {
+        setAdminNagadNo(dbState.add_money_methods.nagad || "");
+      }
+      if (document.activeElement?.id !== "admin-rocket-no") {
+        setAdminRocketNo(dbState.add_money_methods.rocket || "");
+      }
     }
   }, [dbState?.settlement_config, dbState?.add_money_methods]);
   const [crudRegular, setCrudRegular] = useState("");
@@ -2088,23 +2100,7 @@ export default function App() {
       {/* PHONE EMULATOR CONTAINER: Fits perfectly 100% on mobile device, frames beautifully on desktop */}
       <div className="w-full max-w-md min-h-screen md:min-h-[820px] md:max-h-[880px] md:rounded-[40px] md:border-[12px] md:border-slate-800 md:shadow-2xl overflow-hidden flex flex-col bg-slate-50 relative">
         
-        {/* TOP STATUS BAR (Realistic Android interface layout) */}
-        <div className="bg-orange-600 text-white px-5 pt-3 pb-1 flex items-center justify-between text-xs font-medium tracking-tight shrink-0 select-none">
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-[11px]">{lang === "bn" ? "আরবি ব্যাংক ৪জি" : "RB Bank 4G"}</span>
-          </div>
-          
-          {/* Subtle Punch-hole Camera simulation for aesthetic precision */}
-          <div className="w-3.5 h-3.5 rounded-full bg-slate-900 absolute left-1/2 transform -translate-x-1/2 top-2.5 hidden md:block border-2 border-slate-700/45"></div>
 
-          <div className="flex items-center gap-2 text-[11px]">
-            <span>10:30 AM</span>
-            <div className="flex items-center gap-1">
-              <span>📶</span>
-              <span>🔋 98%</span>
-            </div>
-          </div>
-        </div>
 
         {/* MAIN INTERACTIVE SHELL SCREEN STAGE */}
         <div className="flex-1 overflow-y-auto flex flex-col relative pb-16">
@@ -2127,7 +2123,7 @@ export default function App() {
                   <button
                     id="lang-toggle"
                     onClick={() => setLang((prev) => (prev === "bn" ? "en" : "bn"))}
-                    className="flex items-center gap-1 px-3 py-1 bg-orange-100 hover:bg-orange-200 border border-orange-200 rounded-full text-xs font-bold text-orange-700 cursor-pointer transition active:scale-95"
+                    className="flex items-center gap-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 border border-blue-200 rounded-full text-xs font-bold text-blue-700 cursor-pointer transition active:scale-95"
                   >
                     🌐 {lang === "bn" ? "English" : "বাংলা"}
                   </button>
@@ -2137,20 +2133,20 @@ export default function App() {
                 <div className="my-6 text-center select-none">
                   <div className="relative w-28 h-28 mx-auto flex items-center justify-center">
                     {/* Glowing outer circle */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-orange-500 via-red-500 to-yellow-400 rounded-full animate-spin-slow opacity-15 blur"></div>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 via-indigo-600 to-cyan-400 rounded-full animate-spin-slow opacity-15 blur"></div>
                     
                     {/* Nagad Swirl shape using beautiful native styling */}
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 via-orange-500 to-yellow-400 flex flex-col items-center justify-center shadow-lg relative p-1 text-white">
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-400 flex flex-col items-center justify-center shadow-lg relative p-1 text-white">
                       <div className="absolute top-3 left-6 text-yellow-300 font-black text-2xl">⚡</div>
                       <Coins className="w-10 h-10 text-white stroke-[1.5]" />
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-orange-100 mt-1">RB Bank</span>
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-blue-100 mt-1">RB Bank</span>
                     </div>
                   </div>
 
-                  <h1 className="text-2xl font-black tracking-tight text-red-600 mt-4 font-sans">
+                  <h1 className="text-2xl font-black tracking-tight text-blue-700 mt-4 font-sans">
                     {t.title}
                   </h1>
-                  <p className="text-xs text-orange-600 font-semibold uppercase tracking-wider mt-0.5">
+                  <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mt-0.5">
                     {t.tagline_sub}
                   </p>
                 </div>
@@ -2162,8 +2158,8 @@ export default function App() {
                       onSubmit={handleUserRegisterSubmit}
                       className="space-y-3"
                     >
-                      <div className="bg-orange-50 border border-orange-100 p-2.5 rounded-xl text-center mb-1">
-                        <span className="text-[11px] font-black text-orange-700 uppercase tracking-wide">
+                      <div className="bg-blue-50 border border-blue-100 p-2.5 rounded-xl text-center mb-1">
+                        <span className="text-[11px] font-black text-blue-700 uppercase tracking-wide">
                           {lang === "bn" ? "নতুন অ্যাকাউন্ট নিবন্ধন করুন" : "Register New Account"}
                         </span>
                       </div>
@@ -2178,7 +2174,7 @@ export default function App() {
                           value={regName}
                           onChange={(e) => setRegName(e.target.value)}
                           placeholder={lang === "bn" ? "আপনার নাম লিখুন" : "Enter your name"}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white transition"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white transition"
                         />
                       </div>
 
@@ -2193,7 +2189,7 @@ export default function App() {
                           value={regPhone}
                           onChange={(e) => setRegPhone(e.target.value)}
                           placeholder="01XXXXXXXXX"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white transition"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white transition"
                         />
                       </div>
 
@@ -2209,7 +2205,7 @@ export default function App() {
                               onClick={() => setRegRole(r)}
                               className={`py-1.5 rounded-lg text-[10px] font-bold border transition ${
                                 regRole === r
-                                  ? "bg-orange-500 text-white border-orange-500"
+                                  ? "bg-blue-600 text-white border-blue-600"
                                   : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                               }`}
                             >
@@ -2233,7 +2229,7 @@ export default function App() {
                             value={regPin}
                             onChange={(e) => setRegPin(e.target.value)}
                             placeholder="••••"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white transition"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white transition"
                           />
                         </div>
                         <div>
@@ -2247,7 +2243,7 @@ export default function App() {
                             value={regConfirmPin}
                             onChange={(e) => setRegConfirmPin(e.target.value)}
                             placeholder="••••"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white transition"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -2267,7 +2263,7 @@ export default function App() {
                       <button
                         type="submit"
                         disabled={isRegistering}
-                        className="w-full py-2.5 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                        className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                       >
                         {isRegistering && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                         <span>{lang === "bn" ? "নিবন্ধন সম্পন্ন করুন" : "Complete Registration"}</span>
@@ -2280,7 +2276,7 @@ export default function App() {
                           setRegError("");
                           setRegSuccess("");
                         }}
-                        className="w-full py-2 text-slate-500 hover:text-orange-600 font-bold text-[10px] transition cursor-pointer animate-pulse"
+                        className="w-full py-2 text-slate-500 hover:text-blue-600 font-bold text-[10px] transition cursor-pointer animate-pulse"
                       >
                         ← {lang === "bn" ? "লগইন স্ক্রিনে ফিরে যান" : "Back to Login"}
                       </button>
@@ -2299,14 +2295,14 @@ export default function App() {
                             Admin Username
                           </label>
                           <div className="relative">
-                            <Users className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <Users className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                             <input
                               id="admin-reg-username"
                               type="text"
                               value={adminRegUsername}
                               onChange={(e) => setAdminRegUsername(e.target.value)}
                               placeholder="Choose Username"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                             />
                           </div>
                         </div>
@@ -2316,14 +2312,14 @@ export default function App() {
                             Password
                           </label>
                           <div className="relative">
-                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                             <input
                               id="admin-reg-password"
                               type="password"
                               value={adminRegPassword}
                               onChange={(e) => setAdminRegPassword(e.target.value)}
                               placeholder="Password"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                             />
                           </div>
                         </div>
@@ -2333,14 +2329,14 @@ export default function App() {
                             Confirm Password
                           </label>
                           <div className="relative">
-                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                             <input
                               id="admin-reg-confirm-password"
                               type="password"
                               value={adminRegConfirmPassword}
                               onChange={(e) => setAdminRegConfirmPassword(e.target.value)}
                               placeholder="Re-enter Password"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                             />
                           </div>
                         </div>
@@ -2350,14 +2346,14 @@ export default function App() {
                             Admin Server Key (admin_server_key)
                           </label>
                           <div className="relative">
-                            <Lock className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <Lock className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                             <input
                               id="admin-server-key"
                               type="password"
                               value={adminServerKey}
                               onChange={(e) => setAdminServerKey(e.target.value)}
                               placeholder="Enter Admin Server Key"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                             />
                           </div>
                           <span className="text-[10px] text-slate-400 font-medium block mt-1 px-1">
@@ -2394,7 +2390,7 @@ export default function App() {
                           <button
                             type="submit"
                             disabled={isAdminRegistering}
-                            className="flex-1 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-md transition active:scale-95 flex items-center justify-center gap-1"
+                            className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-red-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-md transition active:scale-95 flex items-center justify-center gap-1"
                           >
                             {isAdminRegistering ? (
                               <RefreshCw className="w-3 h-3 animate-spin" />
@@ -2416,14 +2412,14 @@ export default function App() {
                             Admin Username
                           </label>
                           <div className="relative">
-                            <Users className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <Users className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                             <input
                               id="admin-username"
                               type="text"
                               value={adminUsername}
                               onChange={(e) => setAdminUsername(e.target.value)}
                               placeholder="Username"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                             />
                           </div>
                         </div>
@@ -2433,14 +2429,14 @@ export default function App() {
                             Admin Password
                           </label>
                           <div className="relative">
-                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                            <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                             <input
                               id="admin-password"
                               type="password"
                               value={adminPassword}
                               onChange={(e) => setAdminPassword(e.target.value)}
                               placeholder="Password"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                             />
                           </div>
                         </div>
@@ -2465,7 +2461,7 @@ export default function App() {
                           </button>
                           <button
                             type="submit"
-                            className="flex-1 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-md transition active:scale-95"
+                            className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-red-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-md transition active:scale-95"
                           >
                             {lang === "bn" ? "এডমিন লগইন" : "Admin Login"}
                           </button>
@@ -2499,14 +2495,14 @@ export default function App() {
                           {t.mobile_label}
                         </label>
                         <div className="relative">
-                          <Smartphone className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                          <Smartphone className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                           <input
                             id="login-phone"
                             type="tel"
                             value={loginPhone}
                             onChange={(e) => setLoginPhone(e.target.value)}
                             placeholder={t.mobile_placeholder}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -2516,7 +2512,7 @@ export default function App() {
                           {t.pin_label}
                         </label>
                         <div className="relative">
-                          <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-orange-500" />
+                          <LockKeyhole className="absolute left-3 top-3.5 w-4 h-4 text-blue-500" />
                           <input
                             id="login-pin"
                             type="password"
@@ -2524,7 +2520,7 @@ export default function App() {
                             onChange={(e) => setLoginPin(e.target.value)}
                             placeholder={t.pin_placeholder}
                             maxLength={4}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -2540,7 +2536,7 @@ export default function App() {
                         id="login-submit"
                         type="submit"
                         disabled={isLoggingIn}
-                        className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold text-sm rounded-xl cursor-pointer shadow-lg hover:shadow-xl transition active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold text-sm rounded-xl cursor-pointer shadow-lg hover:shadow-xl transition active:scale-[0.98] flex items-center justify-center gap-2"
                       >
                         {isLoggingIn ? (
                           <>
@@ -2565,7 +2561,7 @@ export default function App() {
                         setRegError("");
                         setRegSuccess("");
                       }}
-                      className="text-xs text-orange-600 hover:text-orange-700 font-bold cursor-pointer transition flex items-center gap-1"
+                      className="text-xs text-blue-600 hover:text-blue-700 font-bold cursor-pointer transition flex items-center gap-1"
                     >
                       📝 {lang === "bn" ? "নিবন্ধন করুন" : "Register"}
                     </button>
@@ -2575,7 +2571,7 @@ export default function App() {
                         setShowAdminLogin(!showAdminLogin);
                         setAdminError("");
                       }}
-                      className="text-xs text-red-600 hover:text-red-700 font-bold cursor-pointer transition"
+                      className="text-xs text-blue-600 hover:text-blue-700 font-bold cursor-pointer transition"
                     >
                       {showAdminLogin ? (lang === "bn" ? "ব্যবহারকারী লগইন" : "User Login") : (lang === "bn" ? "🛡️ এডমিন প্যানেল" : "🛡️ Admin Panel")}
                     </button>
@@ -2585,16 +2581,16 @@ export default function App() {
 
                 {/* Bottom interactive footer options */}
                 <div className="border-t border-slate-100 pt-4 mt-4 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-500 select-none">
-                  <div className="flex flex-col items-center gap-1 hover:text-orange-500 transition cursor-pointer">
-                    <span className="text-base bg-orange-50 p-2 rounded-full">📍</span>
+                  <div className="flex flex-col items-center gap-1 hover:text-blue-500 transition cursor-pointer">
+                    <span className="text-base bg-blue-50 p-2 rounded-full">📍</span>
                     <span>{t.store_locator}</span>
                   </div>
-                  <div className="flex flex-col items-center gap-1 hover:text-orange-500 transition cursor-pointer">
-                    <span className="text-base bg-orange-50 p-2 rounded-full">🎁</span>
+                  <div className="flex flex-col items-center gap-1 hover:text-blue-500 transition cursor-pointer">
+                    <span className="text-base bg-blue-50 p-2 rounded-full">🎁</span>
                     <span>{t.offers}</span>
                   </div>
-                  <div className="flex flex-col items-center gap-1 hover:text-orange-500 transition cursor-pointer">
-                    <span className="text-base bg-orange-50 p-2 rounded-full">❓</span>
+                  <div className="flex flex-col items-center gap-1 hover:text-blue-500 transition cursor-pointer">
+                    <span className="text-base bg-blue-50 p-2 rounded-full">❓</span>
                     <span>{t.help}</span>
                   </div>
                 </div>
@@ -2609,12 +2605,12 @@ export default function App() {
                 className="flex flex-col min-h-[600px] bg-slate-900 text-slate-100 flex-1"
               >
                 {/* Admin Header */}
-                <div className="bg-gradient-to-r from-red-800 to-slate-900 p-4 border-b border-red-900 flex justify-between items-center select-none shrink-0">
+                <div className="bg-gradient-to-r from-blue-800 to-slate-900 p-4 border-b border-blue-900 flex justify-between items-center select-none shrink-0">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">🛡️</span>
                     <div>
                       <h2 className="text-sm font-bold tracking-tight text-white uppercase">RB Admin Panel</h2>
-                      <p className="text-[10px] text-red-300 font-mono tracking-widest uppercase">System Core Control</p>
+                      <p className="text-[10px] text-blue-300 font-mono tracking-widest uppercase">System Core Control</p>
                     </div>
                   </div>
                   <button
@@ -2623,7 +2619,7 @@ export default function App() {
                       setAdminUsername("");
                       setAdminPassword("");
                     }}
-                    className="px-3 py-1 bg-red-600 hover:bg-red-700 font-bold text-xs text-white rounded-lg transition active:scale-95 cursor-pointer flex items-center gap-1"
+                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 font-bold text-xs text-white rounded-lg transition active:scale-95 cursor-pointer flex items-center gap-1"
                   >
                     Logout
                   </button>
@@ -2633,43 +2629,43 @@ export default function App() {
                 <div className="bg-slate-800 flex border-b border-slate-700 text-xs font-bold select-none overflow-x-auto shrink-0 scrollbar-none">
                   <button
                     onClick={() => setAdminTab("pending")}
-                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "pending" ? "bg-slate-900 text-red-400 border-b-2 border-red-500" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "pending" ? "bg-slate-900 text-blue-400 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     Pending ({dbState.transactions.filter(t => t.status === "Pending").length})
                   </button>
                   <button
                     onClick={() => setAdminTab("transactions")}
-                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "transactions" ? "bg-slate-900 text-red-400 border-b-2 border-red-500" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "transactions" ? "bg-slate-900 text-blue-400 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     Transactions ({dbState.transactions.length})
                   </button>
                   <button
                     onClick={() => setAdminTab("notices")}
-                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "notices" ? "bg-slate-900 text-red-400 border-b-2 border-red-500" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "notices" ? "bg-slate-900 text-blue-400 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     Notices ({(dbState.notices || []).length})
                   </button>
                   <button
                     onClick={() => setAdminTab("settlement")}
-                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "settlement" ? "bg-slate-900 text-red-400 border-b-2 border-red-500" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "settlement" ? "bg-slate-900 text-blue-400 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     Settlement Config
                   </button>
                   <button
                     onClick={() => setAdminTab("offers")}
-                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "offers" ? "bg-slate-900 text-red-400 border-b-2 border-red-500" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "offers" ? "bg-slate-900 text-blue-400 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     Drive Offers ({currentDriveOffers.length})
                   </button>
                   <button
                     onClick={() => setAdminTab("users")}
-                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "users" ? "bg-slate-900 text-red-400 border-b-2 border-red-500" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "users" ? "bg-slate-900 text-blue-400 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     Users ({dbState.users.length})
                   </button>
                   <button
                     onClick={() => setAdminTab("logs")}
-                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "logs" ? "bg-slate-900 text-red-400 border-b-2 border-red-500" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-3 text-center transition shrink-0 ${adminTab === "logs" ? "bg-slate-900 text-blue-400 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-200"}`}
                   >
                     Live Logs
                   </button>
@@ -2681,7 +2677,7 @@ export default function App() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center pb-2 border-b border-slate-800">
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending Orders List</span>
-                        <span className="text-[10px] font-mono bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-900">Live DB Ledger</span>
+                        <span className="text-[10px] font-mono bg-blue-950 text-blue-400 px-2 py-0.5 rounded border border-blue-900">Live DB Ledger</span>
                       </div>
                       {dbState.transactions.filter(t => t.status === "Pending").length === 0 ? (
                         <div className="text-center py-12 text-slate-500 text-xs">
@@ -2698,7 +2694,7 @@ export default function App() {
                                 </span>
                                 <p className="text-xs font-bold text-slate-100 mt-1 font-mono">{txn.txn_id}</p>
                               </div>
-                              <span className="text-sm font-black text-red-400 font-mono">
+                              <span className="text-sm font-black text-blue-400 font-mono">
                                 ৳{txn.amount}
                               </span>
                             </div>
@@ -2823,7 +2819,7 @@ export default function App() {
                           )}
                           <button
                             type="submit"
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 font-bold text-xs text-white rounded-lg transition shadow"
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 font-bold text-xs text-white rounded-lg transition shadow"
                           >
                             {editingOfferId ? "Update Offer" : "Save Offer"}
                           </button>
@@ -2839,14 +2835,14 @@ export default function App() {
                               <p className="text-[10px] font-bold text-slate-400">{o.operator}</p>
                               <p className="text-xs font-bold text-white mt-0.5">{o.name}</p>
                               <p className="text-[10px] text-slate-400 mt-1">
-                                Regular: <span className="line-through">৳{o.regular}</span> | Price: <span className="font-bold text-red-400">৳{o.price}</span> | Save: <span className="text-emerald-400 font-bold">৳{o.save}</span>
+                                Regular: <span className="line-through">৳{o.regular}</span> | Price: <span className="font-bold text-blue-400">৳{o.price}</span> | Save: <span className="text-emerald-400 font-bold">৳{o.save}</span>
                               </p>
                             </div>
                             <div className="flex gap-1.5 shrink-0 ml-2 select-none">
                               <button
                                 type="button"
                                 onClick={() => handleStartEditDriveOffer(o)}
-                                className="p-1.5 bg-slate-700 hover:bg-orange-600 rounded-lg transition active:scale-90 text-[11px]"
+                                className="p-1.5 bg-slate-700 hover:bg-blue-700 rounded-lg transition active:scale-90 text-[11px]"
                                 title="Edit"
                               >
                                 ✏️
@@ -2854,7 +2850,7 @@ export default function App() {
                               <button
                                 type="button"
                                 onClick={() => handleDeleteDriveOffer(o.id)}
-                                className="p-1.5 bg-slate-700 hover:bg-red-700 rounded-lg transition active:scale-90 text-[11px]"
+                                className="p-1.5 bg-slate-700 hover:bg-blue-700 rounded-lg transition active:scale-90 text-[11px]"
                                 title="Delete"
                               >
                                 🗑️
@@ -2873,7 +2869,7 @@ export default function App() {
                         <button
                           type="button"
                           onClick={handleResetDB}
-                          className="px-2 py-0.5 rounded bg-red-950 text-red-400 hover:bg-red-900 font-bold text-[9px] border border-red-800 transition active:scale-95"
+                          className="px-2 py-0.5 rounded bg-blue-950 text-blue-400 hover:bg-red-900 font-bold text-[9px] border border-red-800 transition active:scale-95"
                         >
                           Hard Reset DB
                         </button>
@@ -2887,7 +2883,7 @@ export default function App() {
                             {isEditing ? (
                               <form onSubmit={handleEditUserSubmit} className="space-y-3.5 text-xs">
                                 <div className="flex justify-between items-center border-b border-slate-700 pb-1.5">
-                                  <span className="font-black text-red-400 uppercase text-[10px] tracking-wider">
+                                  <span className="font-black text-blue-400 uppercase text-[10px] tracking-wider">
                                     Edit User Node #{user.id}
                                   </span>
                                   <span className="text-[9px] text-slate-500 font-mono">{user.phone}</span>
@@ -2960,7 +2956,7 @@ export default function App() {
                                   </div>
                                 </div>
                                 {userEditError && (
-                                  <p className="text-[10px] text-red-400 font-black font-mono">
+                                  <p className="text-[10px] text-blue-400 font-black font-mono">
                                     ⚠️ {userEditError}
                                   </p>
                                 )}
@@ -2975,7 +2971,7 @@ export default function App() {
                                   <button
                                     type="submit"
                                     disabled={isSavingUser}
-                                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded"
+                                    className="px-3 py-1.5 bg-blue-600 hover:bg-red-500 text-white font-bold rounded"
                                   >
                                     {isSavingUser ? "Saving..." : "Save"}
                                   </button>
@@ -2995,7 +2991,7 @@ export default function App() {
                                     )}
                                     <span className={`text-[8px] font-black uppercase tracking-wider px-1 py-0.5 rounded ${
                                       user.status === "Active" ? "bg-emerald-950/80 text-emerald-400" :
-                                      user.status === "Suspended" ? "bg-red-950/80 text-red-400" : "bg-slate-700 text-slate-300"
+                                      user.status === "Suspended" ? "bg-blue-950/80 text-blue-400" : "bg-slate-700 text-slate-300"
                                     }`}>
                                       {user.status || "Active"}
                                     </span>
@@ -3012,7 +3008,7 @@ export default function App() {
                                       setEditUserPin("");
                                       setUserEditError("");
                                     }}
-                                    className="p-1.5 bg-slate-700 hover:bg-orange-500 rounded-lg text-xs font-bold transition shrink-0"
+                                    className="p-1.5 bg-slate-700 hover:bg-blue-600 rounded-lg text-xs font-bold transition shrink-0"
                                     title="Edit User Profile"
                                   >
                                     ✏️
@@ -3082,7 +3078,7 @@ export default function App() {
                           <button
                             type="submit"
                             disabled={isSubmittingNotice}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-bold transition active:scale-95 cursor-pointer"
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold transition active:scale-95 cursor-pointer"
                           >
                             {isSubmittingNotice ? "Publishing..." : "Publish Announcement"}
                           </button>
@@ -3139,6 +3135,7 @@ export default function App() {
                           <div>
                             <label className="text-[10px] text-slate-400 font-bold block mb-1">Bank Name</label>
                             <input
+                              id="settlement-bank-name"
                               type="text"
                               value={settlementBankName}
                               onChange={(e) => setSettlementBankName(e.target.value)}
@@ -3150,6 +3147,7 @@ export default function App() {
                           <div>
                             <label className="text-[10px] text-slate-400 font-bold block mb-1">Account Number</label>
                             <input
+                              id="settlement-account-no"
                               type="text"
                               value={settlementAccountNo}
                               onChange={(e) => setSettlementAccountNo(e.target.value)}
@@ -3161,6 +3159,7 @@ export default function App() {
                           <div>
                             <label className="text-[10px] text-slate-400 font-bold block mb-1">Routing Number</label>
                             <input
+                              id="settlement-routing-no"
                               type="text"
                               value={settlementRoutingNo}
                               onChange={(e) => setSettlementRoutingNo(e.target.value)}
@@ -3173,7 +3172,7 @@ export default function App() {
                             <button
                               type="submit"
                               disabled={isSavingSettlement}
-                              className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold transition active:scale-95 cursor-pointer"
+                              className="px-4 py-2 bg-blue-600 hover:bg-red-500 text-white rounded font-bold transition active:scale-95 cursor-pointer"
                             >
                               {isSavingSettlement ? "Saving..." : "Save Settlement Account"}
                             </button>
@@ -3183,7 +3182,7 @@ export default function App() {
 
                       {dbState.settlement_config && (
                         <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4 text-xs space-y-1.5">
-                          <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider block">Current Live Config</span>
+                          <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">Current Live Config</span>
                           <div className="grid grid-cols-3 gap-2 font-mono text-[10px] text-slate-300 pt-1">
                             <div>
                               <p className="text-slate-500">BANK</p>
@@ -3203,7 +3202,7 @@ export default function App() {
 
                       {/* ADD MONEY CONFIGURATION BOARD */}
                       <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-xs space-y-3 shadow-md mt-4">
-                        <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider block">💸 Configure bKash/Nagad/Rocket Numbers</span>
+                        <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">💸 Configure bKash/Nagad/Rocket Numbers</span>
                         <p className="text-slate-300 font-medium leading-relaxed">
                           Define the official bKash, Nagad, and Rocket mobile numbers where users send money to perform "Add Money" operations.
                         </p>
@@ -3211,6 +3210,7 @@ export default function App() {
                           <div>
                             <label className="text-[10px] text-slate-400 font-bold block mb-1">bKash Number</label>
                             <input
+                              id="admin-bkash-no"
                               type="tel"
                               maxLength={11}
                               value={adminBkashNo}
@@ -3223,6 +3223,7 @@ export default function App() {
                           <div>
                             <label className="text-[10px] text-slate-400 font-bold block mb-1">Nagad Number</label>
                             <input
+                              id="admin-nagad-no"
                               type="tel"
                               maxLength={11}
                               value={adminNagadNo}
@@ -3235,6 +3236,7 @@ export default function App() {
                           <div>
                             <label className="text-[10px] text-slate-400 font-bold block mb-1">Rocket Number</label>
                             <input
+                              id="admin-rocket-no"
                               type="tel"
                               maxLength={11}
                               value={adminRocketNo}
@@ -3248,7 +3250,7 @@ export default function App() {
                             <button
                               type="submit"
                               disabled={isSavingAddMoneyConfig}
-                              className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold transition active:scale-95 cursor-pointer"
+                              className="px-4 py-2 bg-blue-600 hover:bg-red-500 text-white rounded font-bold transition active:scale-95 cursor-pointer"
                             >
                               {isSavingAddMoneyConfig ? "Saving..." : "Save Gateway Numbers"}
                             </button>
@@ -3262,7 +3264,7 @@ export default function App() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center pb-2 border-b border-slate-800">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">All Transaction History Logs</span>
-                        <span className="text-[9px] bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-900 font-mono font-bold">
+                        <span className="text-[9px] bg-blue-950 text-blue-400 px-2 py-0.5 rounded border border-blue-900 font-mono font-bold">
                           {dbState.transactions.length} Total Txns
                         </span>
                       </div>
@@ -3280,7 +3282,7 @@ export default function App() {
                                 </span>
                                 <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${
                                   isApproved ? "bg-emerald-950 text-emerald-400 border border-emerald-900" :
-                                  isPending ? "bg-amber-950 text-amber-400 border border-amber-900" : "bg-red-950 text-red-400 border border-red-900"
+                                  isPending ? "bg-amber-950 text-amber-400 border border-amber-900" : "bg-blue-950 text-blue-400 border border-blue-900"
                                 }`}>
                                   {txn.status}
                                 </span>
@@ -3333,8 +3335,8 @@ export default function App() {
                 className="flex flex-col min-h-[600px] bg-slate-50"
               >
                 
-                {/* 1. APP HEADER BLOCK (Red-Orange beautiful gradient with swirl) */}
-                <header className="bg-gradient-to-r from-orange-500 via-red-500 to-red-600 text-white p-5 rounded-b-[24px] shadow-md relative overflow-hidden shrink-0 select-none">
+                {/* 1. APP HEADER BLOCK (Blue-Indigo beautiful gradient with swirl) */}
+                <header className="bg-gradient-to-r from-blue-500 via-indigo-600 to-indigo-700 text-white p-5 rounded-b-[24px] shadow-md relative overflow-hidden shrink-0 select-none">
                   
                   {/* Nagad-like decorative wave overlay path */}
                   <div className="absolute right-0 bottom-0 top-0 left-0 opacity-10 pointer-events-none">
@@ -3347,12 +3349,12 @@ export default function App() {
                     
                     {/* User info row */}
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white text-orange-600 font-black flex items-center justify-center text-sm border-2 border-orange-200/50 shadow shadow-orange-900/10">
+                      <div className="w-10 h-10 rounded-full bg-white text-blue-600 font-black flex items-center justify-center text-sm border-2 border-blue-200/50 shadow shadow-blue-900/10">
                         {loggedUser.name.charAt(0)}
                       </div>
                       <div>
                         <p className="text-sm font-black tracking-tight">{loggedUser.name}</p>
-                        <p className="text-[10px] text-orange-100 font-mono font-medium">{loggedUser.phone}</p>
+                        <p className="text-[10px] text-blue-100 font-mono font-medium">{loggedUser.phone}</p>
                       </div>
                     </div>
 
@@ -3366,7 +3368,7 @@ export default function App() {
                       </button>
                       <div className="relative bg-white/10 hover:bg-white/25 p-1.5 rounded-full cursor-pointer transition">
                         <Bell className="w-4 h-4 text-white" />
-                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-yellow-400 text-orange-950 font-black text-[8px] rounded-full flex items-center justify-center border border-orange-600">
+                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-yellow-400 text-blue-950 font-black text-[8px] rounded-full flex items-center justify-center border border-blue-600">
                           2
                         </span>
                       </div>
@@ -3387,12 +3389,12 @@ export default function App() {
                             initial={{ left: "-100%" }}
                             animate={{ left: "100%" }}
                             transition={{ duration: 0.4 }}
-                            className="absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-orange-500/15 to-transparent pointer-events-none"
+                            className="absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-blue-500/15 to-transparent pointer-events-none"
                           />
                         )}
                       </AnimatePresence>
 
-                      <div className="w-5 h-5 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-[11px] font-black shrink-0 shadow shadow-orange-600/30">
+                      <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-[11px] font-black shrink-0 shadow shadow-blue-600/30">
                         ৳
                       </div>
                       
@@ -3404,7 +3406,7 @@ export default function App() {
                               initial={{ y: 8, opacity: 0 }}
                               animate={{ y: 0, opacity: 1 }}
                               exit={{ y: -8, opacity: 0 }}
-                              className="text-red-600 text-sm font-black font-mono"
+                              className="text-blue-600 text-sm font-black font-mono"
                             >
                               ৳ {Number(loggedUser.balance || 0).toLocaleString(lang === "bn" ? "bn-BD" : "en-US", { minimumFractionDigits: 2 })} BDT
                             </motion.span>
@@ -3455,7 +3457,7 @@ export default function App() {
                                 onClick={() => navigateTo("cash_in")}
                                 className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                               >
-                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-orange-200">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200 border border-blue-200">
                                   <ArrowLeftRight className="w-5 h-5 stroke-[2]" />
                                 </div>
                                 <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3468,7 +3470,7 @@ export default function App() {
                                 onClick={() => navigateTo("recharge")}
                                 className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                               >
-                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-slate-200">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200 border border-slate-200">
                                   <Smartphone className="w-5 h-5 stroke-[2]" />
                                 </div>
                                 <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3490,7 +3492,7 @@ export default function App() {
                                 }}
                                 className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                               >
-                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-orange-200">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200 border border-blue-200">
                                   <UserPlus className="w-5 h-5 stroke-[2]" />
                                 </div>
                                 <span className="text-[10px] font-black text-slate-700 leading-tight animate-pulse">
@@ -3503,7 +3505,7 @@ export default function App() {
                                 onClick={() => navigateTo("add_money")}
                                 className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                               >
-                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-orange-200">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200 border border-blue-200">
                                   <FileText className="w-5 h-5 stroke-[2]" />
                                 </div>
                                 <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3527,7 +3529,7 @@ export default function App() {
                                 onClick={() => navigateTo("merchant_withdraw")}
                                 className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                               >
-                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-orange-200">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200 border border-blue-200">
                                   <Coins className="w-5 h-5 stroke-[2]" />
                                 </div>
                                 <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3540,7 +3542,7 @@ export default function App() {
                                 onClick={() => navigateTo("add_money")}
                                 className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                               >
-                                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200 border border-orange-200">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200 border border-blue-200">
                                   <FileText className="w-5 h-5 stroke-[2]" />
                                 </div>
                                 <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3563,7 +3565,7 @@ export default function App() {
                                   onClick={() => navigateTo("send_money")}
                                   className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                                 >
-                                  <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200">
+                                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200">
                                     <ArrowLeftRight className="w-5 h-5 stroke-[2]" />
                                   </div>
                                   <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3576,7 +3578,7 @@ export default function App() {
                                   onClick={() => navigateTo("cash_out")}
                                   className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                                 >
-                                  <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200">
+                                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200">
                                     <Coins className="w-5 h-5 stroke-[2]" />
                                   </div>
                                   <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3589,7 +3591,7 @@ export default function App() {
                                   onClick={() => navigateTo("recharge")}
                                   className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                                 >
-                                  <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200">
+                                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200">
                                     <Smartphone className="w-5 h-5 stroke-[2]" />
                                   </div>
                                   <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3602,7 +3604,7 @@ export default function App() {
                                   onClick={() => navigateTo("add_money")}
                                   className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                                 >
-                                  <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 border border-orange-200 transition duration-200">
+                                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 border border-blue-200 transition duration-200">
                                     <FileText className="w-5 h-5 stroke-[2]" />
                                   </div>
                                   <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3667,7 +3669,7 @@ export default function App() {
                                   onClick={() => navigateTo("merchant_pay")}
                                   className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"
                                 >
-                                  <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-inner group-hover:bg-orange-100 transition duration-200">
+                                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:bg-blue-100 transition duration-200">
                                     <ShoppingBag className="w-5 h-5 stroke-[2]" />
                                   </div>
                                   <span className="text-[10px] font-black text-slate-700 leading-tight">
@@ -3720,7 +3722,7 @@ export default function App() {
                             setAmount("25");
                             setTargetPhone(loggedUser.phone);
                           }}
-                          className="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-4 text-white flex items-center justify-between shadow-md cursor-pointer transition transform hover:scale-[1.01] active:scale-95 select-none"
+                          className="bg-gradient-to-r from-blue-600 to-indigo-500 rounded-2xl p-4 text-white flex items-center justify-between shadow-md cursor-pointer transition transform hover:scale-[1.01] active:scale-95 select-none"
                         >
                           <div className="space-y-1 max-w-[70%]">
                             <span className="px-2.5 py-0.5 bg-yellow-400 text-red-700 font-black text-[9px] uppercase tracking-wider rounded-full">
@@ -3729,7 +3731,7 @@ export default function App() {
                             <h3 className="text-xs font-black leading-tight">
                               {lang === "bn" ? "২৫ টাকা রিচার্জে ২৫% ক্যাশব্যাক!" : "Get 25% Cashback on 25 BDT Recharge!"}
                             </h3>
-                            <p className="text-[9px] text-orange-100 font-semibold">
+                            <p className="text-[9px] text-blue-100 font-semibold">
                               {lang === "bn" ? "দুপুর ৩টা - সন্ধ্যা ৬টা • এখনই রিচার্জ করতে ট্যাপ করুন" : "3 PM - 6 PM • Tap to recharge now"}
                             </p>
                           </div>
@@ -3751,7 +3753,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-4 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer"
                           >
                             ←
                           </button>
@@ -3771,7 +3773,7 @@ export default function App() {
                               value={targetPhone}
                               onChange={(e) => setTargetPhone(e.target.value)}
                               placeholder="01XXXXXXXXX"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -3785,7 +3787,7 @@ export default function App() {
                               value={amount}
                               onChange={(e) => setAmount(e.target.value)}
                               placeholder="৳ 0.00"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -3800,7 +3802,7 @@ export default function App() {
                               value={pinCode}
                               onChange={(e) => setPinCode(e.target.value)}
                               placeholder="••••"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -3814,7 +3816,7 @@ export default function App() {
                             id="send-money-submit"
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                             <span>{t.confirm_btn}</span>
@@ -3835,7 +3837,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-4 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer"
                           >
                             ←
                           </button>
@@ -3855,7 +3857,7 @@ export default function App() {
                               value={targetPhone}
                               onChange={(e) => setTargetPhone(e.target.value)}
                               placeholder="01XXXXXXXXX"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -3869,7 +3871,7 @@ export default function App() {
                               value={amount}
                               onChange={(e) => setAmount(e.target.value)}
                               placeholder="৳ 0.00"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                             <p className="text-[10px] text-slate-400 mt-1 font-semibold">
                               * RB Bank Charge: 1.5% (৳ 15.00 per ৳ 1,000.00)
@@ -3887,7 +3889,7 @@ export default function App() {
                               value={pinCode}
                               onChange={(e) => setPinCode(e.target.value)}
                               placeholder="••••"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -3901,7 +3903,7 @@ export default function App() {
                             id="cash-out-submit"
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                             <span>{t.confirm_btn}</span>
@@ -3922,7 +3924,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-4 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer"
                           >
                             ←
                           </button>
@@ -3942,7 +3944,7 @@ export default function App() {
                               value={targetPhone}
                               onChange={(e) => setTargetPhone(e.target.value)}
                               placeholder="01XXXXXXXXX"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -3953,7 +3955,7 @@ export default function App() {
                             <select
                               value={operator}
                               onChange={(e) => setOperator(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             >
                               <option>Grameenphone</option>
                               <option>Robi</option>
@@ -3973,7 +3975,7 @@ export default function App() {
                               value={amount}
                               onChange={(e) => setAmount(e.target.value)}
                               placeholder="৳ 0.00"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -3988,7 +3990,7 @@ export default function App() {
                               value={pinCode}
                               onChange={(e) => setPinCode(e.target.value)}
                               placeholder="••••"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4002,7 +4004,7 @@ export default function App() {
                             id="recharge-submit"
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                             <span>{t.confirm_btn}</span>
@@ -4023,7 +4025,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-4 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer"
                           >
                             ←
                           </button>
@@ -4043,7 +4045,7 @@ export default function App() {
                               value={targetPhone}
                               onChange={(e) => setTargetPhone(e.target.value)}
                               placeholder="01XXXXXXXXX"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4057,7 +4059,7 @@ export default function App() {
                               value={amount}
                               onChange={(e) => setAmount(e.target.value)}
                               placeholder="৳ 0.00"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4072,7 +4074,7 @@ export default function App() {
                               value={pinCode}
                               onChange={(e) => setPinCode(e.target.value)}
                               placeholder="••••"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4086,7 +4088,7 @@ export default function App() {
                             id="merchant-submit"
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                             <span>{t.confirm_btn}</span>
@@ -4107,7 +4109,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-3 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer"
                           >
                             ←
                           </button>
@@ -4129,7 +4131,7 @@ export default function App() {
                                 onClick={() => setOperator(op)}
                                 className={`px-2.5 py-1 text-[10px] font-bold rounded-full border shrink-0 cursor-pointer transition whitespace-nowrap ${
                                   operator === op
-                                    ? "bg-red-500 text-white border-red-500"
+                                    ? "bg-red-500 text-white border-blue-500"
                                     : "bg-slate-50 text-slate-600 border-slate-200"
                                 }`}
                               >
@@ -4150,7 +4152,7 @@ export default function App() {
                               }}
                               className={`p-2.5 rounded-xl border text-left transition duration-200 cursor-pointer relative overflow-hidden flex items-center justify-between ${
                                 selectedDrive?.id === d.id
-                                  ? "border-red-500 bg-red-50/50"
+                                  ? "border-blue-500 bg-red-50/50"
                                   : "border-slate-150 hover:border-slate-300 bg-slate-50/30"
                               }`}
                             >
@@ -4194,7 +4196,7 @@ export default function App() {
                                 value={targetPhone}
                                 onChange={(e) => setTargetPhone(e.target.value)}
                                 placeholder="01XXXXXXXXX"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                               />
                             </div>
 
@@ -4209,7 +4211,7 @@ export default function App() {
                                 value={pinCode}
                                 onChange={(e) => setPinCode(e.target.value)}
                                 placeholder="••••"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                               />
                             </div>
 
@@ -4223,7 +4225,7 @@ export default function App() {
                               id="drive-submit"
                               type="submit"
                               disabled={isSubmitting}
-                              className="w-full py-2.5 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                              className="w-full py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                             >
                               {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                               <span>{t.buy_offer_btn}</span>
@@ -4245,7 +4247,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-3 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer"
                           >
                             ←
                           </button>
@@ -4270,7 +4272,7 @@ export default function App() {
                                 }}
                                 className={`p-2 rounded-xl border text-left flex items-center gap-2 transition cursor-pointer ${
                                   selectedBiller?.id === b.id
-                                    ? "border-red-500 bg-red-50/50"
+                                    ? "border-blue-500 bg-red-50/50"
                                     : "border-slate-150 bg-slate-50/40 hover:border-slate-300"
                                 }`}
                               >
@@ -4297,7 +4299,7 @@ export default function App() {
                                   value={billAccountNo}
                                   onChange={(e) => setBillAccountNo(e.target.value)}
                                   placeholder="e.g. AC-991204"
-                                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500"
+                                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 />
                                 <button
                                   type="button"
@@ -4307,7 +4309,7 @@ export default function App() {
                                       setAmount(selectedBiller.charge.toString());
                                     }
                                   }}
-                                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-[10px] px-3.5 rounded-xl cursor-pointer transition active:scale-95 shrink-0"
+                                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] px-3.5 rounded-xl cursor-pointer transition active:scale-95 shrink-0"
                                 >
                                   {t.fetch_bill_btn}
                                 </button>
@@ -4336,7 +4338,7 @@ export default function App() {
                                     value={pinCode}
                                     onChange={(e) => setPinCode(e.target.value)}
                                     placeholder="••••"
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                                   />
                                 </div>
 
@@ -4350,7 +4352,7 @@ export default function App() {
                                   id="bill-submit"
                                   type="submit"
                                   disabled={isSubmitting}
-                                  className="w-full py-2.5 bg-gradient-to-r from-red-600 to-orange-500 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                                  className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-500 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                                 >
                                   {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                                   <span>{t.pay_bill_btn}</span>
@@ -4374,7 +4376,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-4 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer"
                           >
                             ← {lang === "bn" ? "হোম" : "Back"}
                           </button>
@@ -4396,7 +4398,7 @@ export default function App() {
                                   onClick={() => setAgentRegRole(r)}
                                   className={`py-2 rounded-xl text-xs font-bold border transition ${
                                     agentRegRole === r
-                                      ? "bg-orange-500 text-white border-orange-500"
+                                      ? "bg-blue-600 text-white border-orange-500"
                                       : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                                   }`}
                                 >
@@ -4416,7 +4418,7 @@ export default function App() {
                               value={agentRegName}
                               onChange={(e) => setAgentRegName(e.target.value)}
                               placeholder={lang === "bn" ? "গ্রাহক / মার্চেন্ট এর নাম" : "Customer / Merchant full name"}
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4431,7 +4433,7 @@ export default function App() {
                               value={agentRegPhone}
                               onChange={(e) => setAgentRegPhone(e.target.value)}
                               placeholder="01XXXXXXXXX"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white font-mono"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white font-mono"
                             />
                           </div>
 
@@ -4447,7 +4449,7 @@ export default function App() {
                                 value={agentRegPin}
                                 onChange={(e) => setAgentRegPin(e.target.value)}
                                 placeholder="••••"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                               />
                             </div>
                             <div>
@@ -4461,7 +4463,7 @@ export default function App() {
                                 value={agentRegConfirmPin}
                                 onChange={(e) => setAgentRegConfirmPin(e.target.value)}
                                 placeholder="••••"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                               />
                             </div>
                           </div>
@@ -4477,7 +4479,7 @@ export default function App() {
                               value={agentRegAuthorizePin}
                               onChange={(e) => setAgentRegAuthorizePin(e.target.value)}
                               placeholder="••••"
-                              className="w-full bg-orange-50/50 border border-orange-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-blue-50/50 border border-blue-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4496,7 +4498,7 @@ export default function App() {
                           <button
                             type="submit"
                             disabled={isAgentRegistering}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isAgentRegistering && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                             <span>{lang === "bn" ? "নিবন্ধন সম্পন্ন করুন" : "Complete Registration"}</span>
@@ -4517,7 +4519,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-4 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer animate-pulse"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer animate-pulse"
                           >
                             ← Back
                           </button>
@@ -4537,7 +4539,7 @@ export default function App() {
                               value={targetPhone}
                               onChange={(e) => setTargetPhone(e.target.value)}
                               placeholder="01XXXXXXXXX"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4551,7 +4553,7 @@ export default function App() {
                               value={amount}
                               onChange={(e) => setAmount(e.target.value)}
                               placeholder="৳ 0.00"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4566,7 +4568,7 @@ export default function App() {
                               value={pinCode}
                               onChange={(e) => setPinCode(e.target.value)}
                               placeholder="••••"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4580,7 +4582,7 @@ export default function App() {
                             id="cash-in-submit"
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                             <span>Confirm Cash-In</span>
@@ -4601,7 +4603,7 @@ export default function App() {
                         <div className="flex items-center gap-3 mb-4 select-none">
                           <button
                             onClick={() => navigateTo("home")}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer animate-pulse"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer animate-pulse"
                           >
                             ← Back
                           </button>
@@ -4627,7 +4629,7 @@ export default function App() {
                               value={amount}
                               onChange={(e) => setAmount(e.target.value)}
                               placeholder="৳ 0.00"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                             <p className="text-[10px] text-slate-400 mt-1">
                               Maximum balance available: ৳{loggedUser.balance}
@@ -4645,7 +4647,7 @@ export default function App() {
                               value={pinCode}
                               onChange={(e) => setPinCode(e.target.value)}
                               placeholder="••••"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold tracking-widest focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4659,7 +4661,7 @@ export default function App() {
                             id="merchant-withdraw-submit"
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                             <span>Confirm Settlement</span>
@@ -4684,7 +4686,7 @@ export default function App() {
                               setAddMoneyError("");
                               setAddMoneySuccess("");
                             }}
-                            className="p-1 text-slate-500 hover:text-orange-500 cursor-pointer animate-pulse font-bold"
+                            className="p-1 text-slate-500 hover:text-blue-500 cursor-pointer animate-pulse font-bold"
                           >
                             ← Back
                           </button>
@@ -4764,7 +4766,7 @@ export default function App() {
                               value={addMoneyAmount}
                               onChange={(e) => setAddMoneyAmount(e.target.value)}
                               placeholder="৳ 0.00"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
                             />
                           </div>
 
@@ -4778,7 +4780,7 @@ export default function App() {
                               value={addMoneyTxnId}
                               onChange={(e) => setAddMoneyTxnId(e.target.value)}
                               placeholder="e.g. TRX847291B"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black font-mono tracking-wider text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white uppercase"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-black font-mono tracking-wider text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white uppercase"
                             />
                           </div>
 
@@ -4797,7 +4799,7 @@ export default function App() {
                           <button
                             type="submit"
                             disabled={isSubmittingAddMoney}
-                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-xs font-black rounded-xl shadow cursor-pointer transition active:scale-[0.98] flex items-center justify-center gap-1.5"
                           >
                             {isSubmittingAddMoney ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
                             <span>{lang === "bn" ? "অনুরোধ পাঠান" : "Submit Request"}</span>
@@ -5031,13 +5033,13 @@ export default function App() {
                       >
                         {/* Profile Info block */}
                         <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-orange-500 text-white font-black flex items-center justify-center text-base shadow shadow-orange-500/20">
+                          <div className="w-12 h-12 rounded-full bg-blue-600 text-white font-black flex items-center justify-center text-base shadow shadow-blue-500/20">
                             {loggedUser.name.charAt(0)}
                           </div>
                           <div className="leading-tight">
                             <h3 className="text-sm font-black text-slate-800">{loggedUser.name}</h3>
                             <p className="text-[10px] text-slate-400 font-mono mt-0.5">{loggedUser.phone}</p>
-                            <span className="inline-block px-2 py-0.5 rounded text-[8px] font-black bg-orange-100 text-orange-600 border border-orange-200 uppercase tracking-widest mt-1">
+                            <span className="inline-block px-2 py-0.5 rounded text-[8px] font-black bg-blue-100 text-blue-600 border border-blue-200 uppercase tracking-widest mt-1">
                               {loggedUser.role} Account
                             </span>
                           </div>
@@ -5048,7 +5050,7 @@ export default function App() {
                           <span className="text-xs font-bold text-slate-700">Language / ভাষা</span>
                           <button
                             onClick={() => setLang((prev) => (prev === "bn" ? "en" : "bn"))}
-                            className="px-3.5 py-1 bg-slate-100 hover:bg-orange-50 text-slate-700 hover:text-orange-600 border border-slate-200 rounded-lg text-xs font-bold transition active:scale-95 cursor-pointer"
+                            className="px-3.5 py-1 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 rounded-lg text-xs font-bold transition active:scale-95 cursor-pointer"
                           >
                             {lang === "bn" ? "English এ পরিবর্তন" : "বাংলা তে পরিবর্তন"}
                           </button>

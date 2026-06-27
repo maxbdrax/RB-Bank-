@@ -363,7 +363,7 @@ async function startServer() {
       const wallet: Wallet = {
         id: newUserId,
         user_id: user.id,
-        balance: role === "Agent" ? 100000 : 500, // Agents get initial float, customers get 500 welcome balance
+        balance: 0, // initial balance is now 0 BDT as requested
         pending_balance: 0,
         currency: "BDT",
       };
@@ -445,7 +445,7 @@ async function startServer() {
       const wallet: Wallet = {
         id: newUserId,
         user_id: user.id,
-        balance: 500, // standard welcome balance
+        balance: 0, // initial balance is now 0 BDT as requested
         pending_balance: 0,
         currency: "BDT",
       };
